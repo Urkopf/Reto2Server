@@ -15,10 +15,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -31,40 +28,42 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author Urko
  */
 @Entity
-@Table(name = "Pedido", schema = "reto2")
+@Table(name = "articulo", schema = "reto2")
 @XmlRootElement
-public class Pedido implements Serializable {
+public class Articulo implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "pedido_id")
+    @Column(name = "articulo_id")
     private Long id;
 
+    @Column(name = "nombre")
+    private String nombre;
+
+    @Column(name = "precio")
+    private double precio;
+
+    @Column(name = "descripcion")
+    private String descripcion;
+
+    @Column(name = "stock")
+    private int stock;
+
     @Temporal(TemporalType.DATE)
-    @Column(name = "fecha_pedido")
-    private Date fechaPedido;
+    @Column(name = "fecha_reposicion")
+    private Date fechaReposicion;
 
-    @Column(name = "estado")
-    private String estado;
-
-    @Column(name = "total")
-    private double total;
-
-    @Column(name = "cif_cliente")
-    private String cifCliente;
-
-    @ManyToOne
-    @JoinColumn(name = "usuario_id")
-    private Cliente cliente;
-
-    // Relación uno a muchos con PedidoArticulo
-    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "articulo", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PedidoArticulo> pedidoArticulos = new HashSet<>();
 
-    public Pedido() {
+    @ManyToMany(mappedBy = "articulos")
+    private Set<Almacen> almacenes = new HashSet<>();
+
+    public Articulo() {
     }
 
+    // Getters y setters
     public Long getId() {
         return id;
     }
@@ -73,44 +72,44 @@ public class Pedido implements Serializable {
         this.id = id;
     }
 
-    public Date getFechaPedido() {
-        return fechaPedido;
+    public String getNombre() {
+        return nombre;
     }
 
-    public void setFechaPedido(Date fechaPedido) {
-        this.fechaPedido = fechaPedido;
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
-    public String getEstado() {
-        return estado;
+    public double getPrecio() {
+        return precio;
     }
 
-    public void setEstado(String estado) {
-        this.estado = estado;
+    public void setPrecio(double precio) {
+        this.precio = precio;
     }
 
-    public double getTotal() {
-        return total;
+    public String getDescripcion() {
+        return descripcion;
     }
 
-    public void setTotal(double total) {
-        this.total = total;
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
 
-    public String getCifCliente() {
-        return cifCliente;
+    public int getStock() {
+        return stock;
     }
 
-    public void setCifCliente(String cifCliente) {
-        this.cifCliente = cifCliente;
+    public void setStock(int stock) {
+        this.stock = stock;
     }
 
-    public Cliente getCliente() {
-        return cliente;
+    public Date getFechaReposicion() {
+        return fechaReposicion;
     }
 
-    public void setCliente(Cliente cliente) {
-        this.cliente = cliente;
+    public void setFechaReposicion(Date fechaReposicion) {
+        this.fechaReposicion = fechaReposicion;
     }
 
     @XmlTransient
@@ -120,6 +119,15 @@ public class Pedido implements Serializable {
 
     public void setPedidoArticulos(Set<PedidoArticulo> pedidoArticulos) {
         this.pedidoArticulos = pedidoArticulos;
+    }
+
+    @XmlTransient
+    public Set<Almacen> getAlmacenes() {
+        return almacenes;
+    }
+
+    public void setAlmacenes(Set<Almacen> almacenes) {
+        this.almacenes = almacenes;
     }
 
     @Override
@@ -132,10 +140,10 @@ public class Pedido implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Pedido)) {
+        if (!(object instanceof Articulo)) {
             return false;
         }
-        Pedido other = (Pedido) object;
+        Articulo other = (Articulo) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -144,7 +152,7 @@ public class Pedido implements Serializable {
 
     @Override
     public String toString() {
-        return "crud.entidades.Pedido[ id=" + id + " ]";
+        return "crud.entidades.Articulo[ id=" + id + " ]";
     }
 
 }

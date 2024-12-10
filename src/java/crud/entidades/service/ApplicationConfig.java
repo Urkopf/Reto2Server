@@ -30,6 +30,13 @@ public class ApplicationConfig extends Application {
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
         resources.add(crud.entidades.service.PedidoFacadeREST.class);
+        resources.add(service.AlmacenFacadeREST.class);
+        resources.add(service.ArticuloFacadeREST.class);
+        resources.add(service.ClienteFacadeREST.class);
+        resources.add(service.PedidoArticuloFacadeREST.class);
+        resources.add(service.PedidoFacadeREST.class);
+        resources.add(service.TrabajadorFacadeREST.class);
+        resources.add(service.UsuarioFacadeREST.class);
     }
 
 }
