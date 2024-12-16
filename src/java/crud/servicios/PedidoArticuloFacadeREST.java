@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package service;
+package crud.servicios;
 
-import crud.entidades.Trabajador;
+import crud.entidades.PedidoArticulo;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -25,27 +25,27 @@ import javax.ws.rs.core.MediaType;
  * @author 2dam
  */
 @Stateless
-@Path("crud.entidades.trabajador")
-public class TrabajadorFacadeREST extends AbstractFacade<Trabajador> {
+@Path("crud.entidades.pedidoarticulo")
+public class PedidoArticuloFacadeREST extends AbstractFacade<PedidoArticulo> {
 
     @PersistenceContext(unitName = "Reto2_CRUD_WebApplicationPU")
     private EntityManager em;
 
-    public TrabajadorFacadeREST() {
-        super(Trabajador.class);
+    public PedidoArticuloFacadeREST() {
+        super(PedidoArticulo.class);
     }
 
     @POST
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void create(Trabajador entity) {
+    public void create(PedidoArticulo entity) {
         super.create(entity);
     }
 
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void edit(@PathParam("id") Long id, Trabajador entity) {
+    public void edit(@PathParam("id") Long id, PedidoArticulo entity) {
         super.edit(entity);
     }
 
@@ -58,21 +58,21 @@ public class TrabajadorFacadeREST extends AbstractFacade<Trabajador> {
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Trabajador find(@PathParam("id") Long id) {
+    public PedidoArticulo find(@PathParam("id") Long id) {
         return super.find(id);
     }
 
     @GET
     @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<Trabajador> findAll() {
+    public List<PedidoArticulo> findAll() {
         return super.findAll();
     }
 
     @GET
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<Trabajador> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
+    public List<PedidoArticulo> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
         return super.findRange(new int[]{from, to});
     }
 

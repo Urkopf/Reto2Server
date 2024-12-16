@@ -15,6 +15,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -38,16 +40,12 @@ public class Articulo implements Serializable {
     @Column(name = "articulo_id")
     private Long id;
 
-    @Column(name = "nombre")
     private String nombre;
 
-    @Column(name = "precio")
     private double precio;
 
-    @Column(name = "descripcion")
     private String descripcion;
 
-    @Column(name = "stock")
     private int stock;
 
     @Temporal(TemporalType.DATE)
@@ -57,10 +55,8 @@ public class Articulo implements Serializable {
     @OneToMany(mappedBy = "articulo", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PedidoArticulo> pedidoArticulos = new HashSet<>();
 
-    @ManyToMany(mappedBy = "articulos")
-    private Set<Almacen> almacenes = new HashSet<>();
-
     public Articulo() {
+
     }
 
     // Getters y setters
@@ -121,12 +117,18 @@ public class Articulo implements Serializable {
         this.pedidoArticulos = pedidoArticulos;
     }
 
+    @ManyToMany
+    @JoinTable(name = "articulo_almacen", schema = "reto2",
+            joinColumns = @JoinColumn(name = "articulos_articulo_id", referencedColumnName = "articulo_id"),
+            inverseJoinColumns = @JoinColumn(name = "almacenes_almacen_id", referencedColumnName = "almacen_id"))
+    private Set<Almacen> almacenes = new HashSet<>();
+
     @XmlTransient
     public Set<Almacen> getAlmacenes() {
         return almacenes;
     }
 
-    public void setAlmacenes(Set<Almacen> almacenes) {
+    public void setAlmacen(Set<Almacen> almacenes) {
         this.almacenes = almacenes;
     }
 

@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -32,29 +33,18 @@ public class Almacen implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_almacen")
+    @Column(name = "almacen_id")
     private Long id;
 
-    @Column(name = "direccion")
     private String direccion;
 
-    @Column(name = "poblacion")
     private String poblacion;
 
-    @Column(name = "provincia")
     private String provincia;
 
-    @Column(name = "pais")
     private String pais;
 
-    @Column(name = "espacio")
     private double espacio;
-
-    @ManyToMany
-    @JoinTable(name = "almacen_articulo",
-            joinColumns = @JoinColumn(name = "id_almacen"),
-            inverseJoinColumns = @JoinColumn(name = "id_articulo"))
-    private Set<Articulo> articulos = new HashSet<>();
 
     public Almacen() {
     }
@@ -115,6 +105,9 @@ public class Almacen implements Serializable {
     public void setArticulos(Set<Articulo> articulos) {
         this.articulos = articulos;
     }
+
+    @ManyToMany(mappedBy = "almacenes", fetch = FetchType.EAGER)
+    private Set<Articulo> articulos = new HashSet<>();
 
     @Override
     public int hashCode() {

@@ -38,7 +38,7 @@ public class Pedido implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "pedido_id")
+    @Column(name = "id_pedido")
     private Long id;
 
     @Temporal(TemporalType.DATE)

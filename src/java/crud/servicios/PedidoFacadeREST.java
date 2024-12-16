@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package service;
+package crud.servicios;
 
-import crud.entidades.Articulo;
+import crud.entidades.Pedido;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -25,27 +25,27 @@ import javax.ws.rs.core.MediaType;
  * @author 2dam
  */
 @Stateless
-@Path("crud.entidades.articulo")
-public class ArticuloFacadeREST extends AbstractFacade<Articulo> {
+@Path("crud.entidades.pedido")
+public class PedidoFacadeREST extends AbstractFacade<Pedido> {
 
     @PersistenceContext(unitName = "Reto2_CRUD_WebApplicationPU")
     private EntityManager em;
 
-    public ArticuloFacadeREST() {
-        super(Articulo.class);
+    public PedidoFacadeREST() {
+        super(Pedido.class);
     }
 
     @POST
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void create(Articulo entity) {
+    public void create(Pedido entity) {
         super.create(entity);
     }
 
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void edit(@PathParam("id") Long id, Articulo entity) {
+    public void edit(@PathParam("id") Long id, Pedido entity) {
         super.edit(entity);
     }
 
@@ -58,21 +58,21 @@ public class ArticuloFacadeREST extends AbstractFacade<Articulo> {
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Articulo find(@PathParam("id") Long id) {
+    public Pedido find(@PathParam("id") Long id) {
         return super.find(id);
     }
 
     @GET
     @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<Articulo> findAll() {
+    public List<Pedido> findAll() {
         return super.findAll();
     }
 
     @GET
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<Articulo> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
+    public List<Pedido> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
         return super.findRange(new int[]{from, to});
     }
 

@@ -32,26 +32,17 @@ public class Usuario implements Serializable {
     @Column(name = "usuario_id")
     private Long id;
 
-    @Column(name = "login")
-    private String login;
+    private String correo;
 
-    @Column(name = "pass")
-    private String pass;
+    private String contrasena;
 
-    @Column(name = "name")
-    private String name;
+    private String nombre;
 
-    @Column(name = "street")
-    private String street;
+    private String calle;
 
-    @Column(name = "city")
-    private String city;
+    private String ciudad;
 
-    @Column(name = "zip")
-    private String zip;
-
-    @Column(name = "vat")
-    private String vat;
+    private String codPostal;
 
     public Usuario() {
     }
@@ -65,60 +56,52 @@ public class Usuario implements Serializable {
         this.id = id;
     }
 
-    public String getLogin() {
-        return login;
+    public String getCorreo() {
+        return correo;
     }
 
-    public void setLogin(String login) {
-        this.login = login;
+    public void setCorreo(String correo) {
+        this.correo = correo;
     }
 
-    public String getPass() {
-        return pass;
+    public String getContrasena() {
+        return contrasena;
     }
 
-    public void setPass(String pass) {
-        this.pass = pass;
+    public void setContrasena(String contrasena) {
+        this.contrasena = contrasena;
     }
 
-    public String getName() {
-        return name;
+    public String getNombre() {
+        return nombre;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
-    public String getStreet() {
-        return street;
+    public String getCalle() {
+        return calle;
     }
 
-    public void setStreet(String street) {
-        this.street = street;
+    public void setCalle(String calle) {
+        this.calle = calle;
     }
 
-    public String getCity() {
-        return city;
+    public String getCiudad() {
+        return ciudad;
     }
 
-    public void setCity(String city) {
-        this.city = city;
+    public void setCiudad(String ciudad) {
+        this.ciudad = ciudad;
     }
 
-    public String getZip() {
-        return zip;
+    public String getCodPostal() {
+        return codPostal;
     }
 
-    public void setZip(String zip) {
-        this.zip = zip;
-    }
-
-    public String getVat() {
-        return vat;
-    }
-
-    public void setVat(String vat) {
-        this.vat = vat;
+    public void setCodPostal(String codPostal) {
+        this.codPostal = codPostal;
     }
 
     @Override
