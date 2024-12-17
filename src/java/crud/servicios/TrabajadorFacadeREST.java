@@ -5,6 +5,7 @@
  */
 package crud.servicios;
 
+import crud.ejb.IGestorEntidadesLocal;
 import crud.entidades.Trabajador;
 import crud.excepciones.CreateException;
 import crud.excepciones.ReadException;

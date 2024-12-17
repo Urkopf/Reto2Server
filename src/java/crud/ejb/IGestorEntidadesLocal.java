@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package crud.servicios;
+package crud.ejb;
 
 import crud.entidades.Almacen;
 import crud.entidades.Articulo;

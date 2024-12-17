@@ -5,6 +5,7 @@
  */
 package crud.servicios;
 
+import crud.ejb.IGestorEntidadesLocal;
 import crud.entidades.PedidoArticulo;
 import java.util.List;
 import java.util.logging.Logger;
