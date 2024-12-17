@@ -7,9 +7,8 @@ package crud.servicios;
 
 import crud.entidades.Cliente;
 import java.util.List;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import java.util.logging.Logger;
+import javax.ejb.EJB;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -24,68 +23,59 @@ import javax.ws.rs.core.MediaType;
  *
  * @author 2dam
  */
-@Stateless
-@Path("crud.entidades.cliente")
-public class ClienteFacadeREST extends AbstractFacade<Cliente> {
+@Path("cliente")
+public class ClienteFacadeREST {
 
-    @PersistenceContext(unitName = "Reto2_CRUD_WebApplicationPU")
-    private EntityManager em;
+    @EJB
+    private IGestorEntidadesLocal ejb;
 
-    public ClienteFacadeREST() {
-        super(Cliente.class);
-    }
+    private Logger LOGGER = Logger.getLogger(ClienteFacadeREST.class.getName());
+
 
     @POST
-    @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void create(Cliente entity) {
-        super.create(entity);
+
     }
 
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void edit(@PathParam("id") Long id, Cliente entity) {
-        super.edit(entity);
+
     }
 
     @DELETE
     @Path("{id}")
     public void remove(@PathParam("id") Long id) {
-        super.remove(super.find(id));
+
     }
 
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Cliente find(@PathParam("id") Long id) {
-        return super.find(id);
+        return null;
     }
 
     @GET
-    @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Cliente> findAll() {
-        return super.findAll();
+        return null;
     }
 
     @GET
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Cliente> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
-        return super.findRange(new int[]{from, to});
+        return null;
     }
 
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
     public String countREST() {
-        return String.valueOf(super.count());
-    }
-
-    @Override
-    protected EntityManager getEntityManager() {
-        return em;
+        return null;
     }
 
 }
