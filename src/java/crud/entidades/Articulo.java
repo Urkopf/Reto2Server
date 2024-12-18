@@ -18,6 +18,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -31,6 +32,7 @@ import javax.xml.bind.annotation.XmlTransient;
  */
 @Entity
 @Table(name = "articulo", schema = "reto2")
+@NamedQuery(name = "findAllArticulo", query = "SELECT a FROM Articulo a ORDER BY a.id DESC")
 @XmlRootElement
 public class Articulo implements Serializable {
 
