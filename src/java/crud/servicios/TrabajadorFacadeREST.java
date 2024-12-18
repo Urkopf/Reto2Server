@@ -25,6 +25,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import javax.xml.bind.annotation.XmlElementWrapper;
 
 /**
  * Servicio REST para la entidad Trabajador.
