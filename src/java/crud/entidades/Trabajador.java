@@ -11,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQuery;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -21,6 +22,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @Entity
 @Table(name = "trabajador", schema = "reto2")
+@NamedQuery(name = "findAllTrabajador", query = "SELECT a FROM Trabajador a ORDER BY a.id DESC")
 @PrimaryKeyJoinColumn(name = "usuario_id")
 @XmlRootElement
 public class Trabajador extends Usuario {

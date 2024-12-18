@@ -17,6 +17,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -27,6 +28,7 @@ import javax.xml.bind.annotation.XmlTransient;
  */
 @Entity
 @Table(name = "almacen", schema = "reto2")
+@NamedQuery(name = "findAllAlmacen", query = "SELECT a FROM Almacen a ORDER BY a.id DESC")
 @XmlRootElement
 public class Almacen implements Serializable {
 
