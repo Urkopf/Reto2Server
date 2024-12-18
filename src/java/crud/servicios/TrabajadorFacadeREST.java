@@ -27,8 +27,7 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 
 /**
- *
- * @author 2dam
+ * Servicio REST para la entidad Trabajador.
  */
 @Path("trabajador")
 public class TrabajadorFacadeREST {
@@ -42,7 +41,8 @@ public class TrabajadorFacadeREST {
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void create(Trabajador trabajador) {
         try {
-            LOGGER.log(Level.INFO, "Creando Trabajador {0}", trabajador.getId());
+            LOGGER.log(Level.INFO, "Creando Trabajador con ID {0}", trabajador.getId());
+            // Se asume que crear un Trabajador implica crearlo como Usuario y luego como Trabajador.
             ejb.createUsuario(trabajador);
             ejb.createTrabajador(trabajador);
         } catch (CreateException e) {
@@ -54,28 +54,31 @@ public class TrabajadorFacadeREST {
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void edit(@PathParam("id") Long id, Trabajador trabajador) {
+    public void edit(Trabajador trabajador) {
         try {
-            LOGGER.log(Level.INFO, "Creando Trabajador {0}", trabajador.getId());
+            LOGGER.log(Level.INFO, "Actualizando Trabajador con ID {0}", trabajador.getId());
+            // Se asume que actualizar un Trabajador implica actualizar al Usuario asociado y al propio Trabajador.
             ejb.updateUsuario(trabajador);
-            ejb.updateUsuario(trabajador);
+            ejb.updateTrabajador(trabajador);
         } catch (UpdateException e) {
             LOGGER.severe(e.getMessage());
             throw new InternalServerErrorException(e.getMessage());
         }
-
     }
 
     @DELETE
     @Path("{id}")
     public void remove(@PathParam("id") Long id) {
         try {
-            LOGGER.log(Level.INFO, "Creando Trabajador {0}", id);
-            ejb.removeUsuario(ejb.findUsuario(id));
+            LOGGER.log(Level.INFO, "Borrando Trabajador con ID {0}", id);
+            // Primero encontramos el trabajador a eliminar
+            Trabajador trabajador = ejb.findTrabajador(id);
+            // Se asume que remover un Trabajador implica remover también al Usuario.
+            ejb.removeUsuario(trabajador);
+            ejb.removeTrabajador(trabajador);
         } catch (ReadException | RemoveException e) {
             LOGGER.severe(e.getMessage());
             throw new InternalServerErrorException(e.getMessage());
-
         }
     }
 
@@ -84,7 +87,7 @@ public class TrabajadorFacadeREST {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Trabajador find(@PathParam("id") Long id) {
         try {
-            LOGGER.log(Level.INFO, "Creando Trabajador {0}", id);
+            LOGGER.log(Level.INFO, "Buscando Trabajador con ID {0}", id);
             return ejb.findTrabajador(id);
         } catch (ReadException e) {
             LOGGER.severe(e.getMessage());
@@ -108,14 +111,31 @@ public class TrabajadorFacadeREST {
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Trabajador> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
-        return null;
+        try {
+            LOGGER.log(Level.INFO, "Buscando Trabajadores desde {0} hasta {1}", new Object[]{from, to});
+            List<Trabajador> lista = ejb.findAllTrabajador();
+            int size = lista.size();
+            int start = (from != null && from >= 0 && from < size) ? from : 0;
+            int end = (to != null && to <= size && to > start) ? to : size;
+            return lista.subList(start, end);
+        } catch (ReadException e) {
+            LOGGER.severe(e.getMessage());
+            throw new InternalServerErrorException(e.getMessage());
+        }
     }
 
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
     public String countREST() {
-        return null;
+        try {
+            LOGGER.info("Contando la cantidad total de Trabajadores.");
+            int count = ejb.findAllTrabajador().size();
+            return String.valueOf(count);
+        } catch (ReadException e) {
+            LOGGER.severe(e.getMessage());
+            throw new InternalServerErrorException(e.getMessage());
+        }
     }
 
 }

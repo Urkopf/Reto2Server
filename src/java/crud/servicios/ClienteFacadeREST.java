@@ -7,12 +7,18 @@ package crud.servicios;
 
 import crud.ejb.IGestorEntidadesLocal;
 import crud.entidades.Cliente;
+import crud.excepciones.CreateException;
+import crud.excepciones.ReadException;
+import crud.excepciones.RemoveException;
+import crud.excepciones.UpdateException;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -20,10 +26,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-/**
- *
- * @author 2dam
- */
 @Path("cliente")
 public class ClienteFacadeREST {
 
@@ -32,51 +34,100 @@ public class ClienteFacadeREST {
 
     private Logger LOGGER = Logger.getLogger(ClienteFacadeREST.class.getName());
 
-
     @POST
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void create(Cliente entity) {
-
+        try {
+            LOGGER.log(Level.INFO, "Creando cliente con ID {0}", entity.getId());
+            ejb.createUsuario(entity);
+            ejb.createCliente(entity);
+        } catch (CreateException ex) {
+            LOGGER.severe(ex.getMessage());
+            throw new InternalServerErrorException(ex.getMessage());
+        }
     }
 
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void edit(@PathParam("id") Long id, Cliente entity) {
-
+    public void edit(Cliente entity) {
+        try {
+            LOGGER.log(Level.INFO, "Actualizando cliente con ID {0}", entity.getId());
+            // Aseguramos que el ID del entity coincide con el de la ruta
+            ejb.updateUsuario(entity);
+            ejb.updateCliente(entity);
+        } catch (UpdateException ex) {
+            LOGGER.severe(ex.getMessage());
+            throw new InternalServerErrorException(ex.getMessage());
+        }
     }
 
     @DELETE
     @Path("{id}")
     public void remove(@PathParam("id") Long id) {
-
+        try {
+            LOGGER.log(Level.INFO, "Borrando cliente con ID {0}", id);
+            Cliente cliente = ejb.findCliente(id);
+            ejb.removeCliente(cliente);
+        } catch (ReadException | RemoveException ex) {
+            LOGGER.severe(ex.getMessage());
+            throw new InternalServerErrorException(ex.getMessage());
+        }
     }
 
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Cliente find(@PathParam("id") Long id) {
-        return null;
+        try {
+            LOGGER.log(Level.INFO, "Buscando cliente con ID {0}", id);
+            return ejb.findCliente(id);
+        } catch (ReadException ex) {
+            LOGGER.severe(ex.getMessage());
+            throw new InternalServerErrorException(ex.getMessage());
+        }
     }
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Cliente> findAll() {
-        return null;
+        try {
+            LOGGER.log(Level.INFO, "Buscando todos los clientes.");
+            return ejb.findAllCliente();
+        } catch (ReadException ex) {
+            LOGGER.severe(ex.getMessage());
+            throw new InternalServerErrorException(ex.getMessage());
+        }
     }
 
     @GET
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Cliente> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
-        return null;
+        try {
+            LOGGER.log(Level.INFO, "Buscando clientes desde {0} hasta {1}", new Object[]{from, to});
+            List<Cliente> clientes = ejb.findAllCliente();
+            int size = clientes.size();
+            int start = (from != null && from >= 0 && from < size) ? from : 0;
+            int end = (to != null && to <= size && to > start) ? to : size;
+            return clientes.subList(start, end);
+        } catch (ReadException ex) {
+            LOGGER.severe(ex.getMessage());
+            throw new InternalServerErrorException(ex.getMessage());
+        }
     }
 
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
     public String countREST() {
-        return null;
+        try {
+            LOGGER.info("Contando la cantidad total de clientes.");
+            int count = ejb.findAllCliente().size();
+            return String.valueOf(count);
+        } catch (ReadException ex) {
+            LOGGER.severe(ex.getMessage());
+            throw new InternalServerErrorException(ex.getMessage());
+        }
     }
-
 }

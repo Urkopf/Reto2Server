@@ -33,7 +33,11 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
 
     @Override
     public void createUsuario(Usuario usuario) throws CreateException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            em.persist(usuario);
+        } catch (Exception e) {
+            throw new CreateException(e.getMessage());
+        }
     }
 
     @Override
@@ -56,162 +60,339 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
 
     @Override
     public void createPedido(Pedido pedido) throws CreateException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            em.persist(pedido);
+        } catch (Exception e) {
+            throw new CreateException(e.getMessage());
+        }
     }
 
     @Override
     public void createPedidoArticulo(PedidoArticulo pedidoArticulo) throws CreateException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            em.persist(pedidoArticulo);
+        } catch (Exception e) {
+            throw new CreateException(e.getMessage());
+        }
     }
 
     @Override
     public void createArticulo(Articulo articulo) throws CreateException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            em.persist(articulo);
+        } catch (Exception e) {
+            throw new CreateException(e.getMessage());
+        }
     }
 
     @Override
     public void createAlmacen(Almacen almacen) throws CreateException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            em.persist(almacen);
+        } catch (Exception e) {
+            throw new CreateException(e.getMessage());
+        }
     }
 
     @Override
     public void updateUsuario(Usuario usuario) throws UpdateException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            if (!em.contains(usuario)) {
+                em.merge(usuario);
+            }
+            em.flush();
+        } catch (Exception e) {
+            throw new UpdateException(e.getMessage());
+        }
     }
 
     @Override
     public void updateTrabajador(Trabajador trabajador) throws UpdateException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            if (!em.contains(trabajador)) {
+                em.merge(trabajador);
+            }
+            em.flush();
+        } catch (Exception e) {
+            throw new UpdateException(e.getMessage());
+        }
     }
 
     @Override
     public void updateCliente(Cliente cliente) throws UpdateException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            if (!em.contains(cliente)) {
+                em.merge(cliente);
+            }
+            em.flush();
+        } catch (Exception e) {
+            throw new UpdateException(e.getMessage());
+        }
     }
 
     @Override
     public void updatePedido(Pedido pedido) throws UpdateException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            if (!em.contains(pedido)) {
+                em.merge(pedido);
+            }
+            em.flush();
+        } catch (Exception e) {
+            throw new UpdateException(e.getMessage());
+        }
     }
 
     @Override
     public void updatePedidoArticulo(PedidoArticulo pedidoArticulo) throws UpdateException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            if (!em.contains(pedidoArticulo)) {
+                em.merge(pedidoArticulo);
+            }
+            em.flush();
+        } catch (Exception e) {
+            throw new UpdateException(e.getMessage());
+        }
     }
 
     @Override
     public void updateArticulo(Articulo articulo) throws UpdateException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            if (!em.contains(articulo)) {
+                em.merge(articulo);
+            }
+            em.flush();
+        } catch (Exception e) {
+            throw new UpdateException(e.getMessage());
+        }
     }
 
     @Override
     public void updateAlmacen(Almacen almacen) throws UpdateException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            if (!em.contains(almacen)) {
+                em.merge(almacen);
+            }
+            em.flush();
+        } catch (Exception e) {
+            throw new UpdateException(e.getMessage());
+        }
     }
 
     @Override
     public void removeUsuario(Usuario usuario) throws RemoveException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            em.remove(em.merge(usuario));
+        } catch (Exception e) {
+            throw new RemoveException(e.getMessage());
+        }
     }
 
     @Override
     public void removeTrabajador(Trabajador trabajador) throws RemoveException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            em.remove(em.merge(trabajador));
+        } catch (Exception e) {
+            throw new RemoveException(e.getMessage());
+        }
     }
 
     @Override
     public void removeCliente(Cliente cliente) throws RemoveException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            em.remove(em.merge(cliente));
+        } catch (Exception e) {
+            throw new RemoveException(e.getMessage());
+        }
     }
 
     @Override
     public void removePedido(Pedido pedido) throws RemoveException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            em.remove(em.merge(pedido));
+        } catch (Exception e) {
+            throw new RemoveException(e.getMessage());
+        }
     }
 
     @Override
     public void removePedidoArticulo(PedidoArticulo pedidoArticulo) throws RemoveException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            em.remove(em.merge(pedidoArticulo));
+        } catch (Exception e) {
+            throw new RemoveException(e.getMessage());
+        }
     }
 
     @Override
     public void removeArticulo(Articulo articulo) throws RemoveException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            em.remove(em.merge(articulo));
+        } catch (Exception e) {
+            throw new RemoveException(e.getMessage());
+        }
     }
 
     @Override
     public void removeAlmacen(Almacen almacen) throws RemoveException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            em.remove(em.merge(almacen));
+        } catch (Exception e) {
+            throw new RemoveException(e.getMessage());
+        }
     }
 
     @Override
     public Usuario findUsuario(Long id) throws ReadException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Usuario usuario;
+        try {
+            usuario = em.find(Usuario.class, id);
+        } catch (Exception e) {
+            throw new ReadException(e.getMessage());
+        }
+        return usuario;
     }
 
     @Override
     public List<Usuario> findAllUsuario() throws ReadException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Usuario> usuario;
+        try {
+            usuario = em.createNamedQuery("findAllUsuario").getResultList();
+        } catch (Exception e) {
+            throw new ReadException(e.getMessage());
+        }
+        return usuario;
     }
 
     @Override
     public Trabajador findTrabajador(Long id) throws ReadException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Trabajador trabajador;
+        try {
+            trabajador = em.find(Trabajador.class, id);
+        } catch (Exception e) {
+            throw new ReadException(e.getMessage());
+        }
+        return trabajador;
     }
 
     @Override
     public List<Trabajador> findAllTrabajador() throws ReadException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Trabajador> trabajador;
+        try {
+            trabajador = em.createNamedQuery("findAllTrabajador").getResultList();
+        } catch (Exception e) {
+            throw new ReadException(e.getMessage());
+        }
+        return trabajador;
     }
 
     @Override
     public Cliente findCliente(Long id) throws ReadException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Cliente cliente;
+        try {
+            cliente = em.find(Cliente.class, id);
+        } catch (Exception e) {
+            throw new ReadException(e.getMessage());
+        }
+        return cliente;
     }
 
     @Override
     public List<Cliente> findAllCliente() throws ReadException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Cliente> cliente;
+        try {
+            cliente = em.createNamedQuery("findAllCliente").getResultList();
+        } catch (Exception e) {
+            throw new ReadException(e.getMessage());
+        }
+        return cliente;
     }
 
     @Override
     public Pedido findPedido(Long id) throws ReadException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Pedido pedido;
+        try {
+            pedido = em.find(Pedido.class, id);
+        } catch (Exception e) {
+            throw new ReadException(e.getMessage());
+        }
+        return pedido;
     }
 
     @Override
     public List<Pedido> findAllPedido() throws ReadException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Pedido> pedido;
+        try {
+            pedido = em.createNamedQuery("findAllPedido").getResultList();
+        } catch (Exception e) {
+            throw new ReadException(e.getMessage());
+        }
+        return pedido;
     }
 
     @Override
     public PedidoArticulo findPedidoArticulo(Long id) throws ReadException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        PedidoArticulo pedidoArticulo;
+        try {
+            pedidoArticulo = em.find(PedidoArticulo.class, id);
+        } catch (Exception e) {
+            throw new ReadException(e.getMessage());
+        }
+        return pedidoArticulo;
     }
 
     @Override
     public List<PedidoArticulo> findAllPedidoArticulo() throws ReadException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<PedidoArticulo> pedidoArticulo;
+        try {
+            pedidoArticulo = em.createNamedQuery("findAllPedidoArticulo").getResultList();
+        } catch (Exception e) {
+            throw new ReadException(e.getMessage());
+        }
+        return pedidoArticulo;
     }
 
     @Override
     public Articulo findArticulo(Long id) throws ReadException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Articulo articulo;
+        try {
+            articulo = em.find(Articulo.class, id);
+        } catch (Exception e) {
+            throw new ReadException(e.getMessage());
+        }
+        return articulo;
     }
 
     @Override
     public List<Articulo> findAllArticulo() throws ReadException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Articulo> articulo;
+        try {
+            articulo = em.createNamedQuery("findAllArticulo").getResultList();
+        } catch (Exception e) {
+            throw new ReadException(e.getMessage());
+        }
+        return articulo;
     }
 
     @Override
     public Almacen findAlmacen(Long id) throws ReadException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Almacen almacen;
+        try {
+            almacen = em.find(Almacen.class, id);
+        } catch (Exception e) {
+            throw new ReadException(e.getMessage());
+        }
+        return almacen;
     }
 
     @Override
     public List<Almacen> findAllAlmacen() throws ReadException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Almacen> almacen;
+        try {
+            almacen = em.createNamedQuery("findAllAlmacen").getResultList();
+        } catch (Exception e) {
+            throw new ReadException(e.getMessage());
+        }
+        return almacen;
     }
 
 }
