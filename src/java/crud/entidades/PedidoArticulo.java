@@ -15,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -24,6 +25,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @Entity
 @Table(name = "pedido_articulo", schema = "reto2")
+@NamedQuery(name = "findAllPedidoArticulo", query = "SELECT a FROM PedidoArticulo a ORDER BY a.id DESC")
 @XmlRootElement
 public class PedidoArticulo implements Serializable {
 

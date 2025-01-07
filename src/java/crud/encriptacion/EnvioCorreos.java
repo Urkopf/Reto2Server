@@ -14,7 +14,7 @@ import javax.mail.internet.MimeMultipart;
 
 public class EnvioCorreos {
 
-    public static void main(String[] args) {
+    public void enviar(String tipo, String correo) {
         // Configuración del servidor SMTP de SendGrid
         final String SENDGRID_SMTP_HOST = "smtp.sendgrid.net";
         final String SMTP_PORT = "587"; // Puerto seguro para TLS
@@ -51,16 +51,27 @@ public class EnvioCorreos {
             for (int i = 0; i < recipients.length; i++) {
                 addressTo[i] = new InternetAddress(recipients[i]);
             }
-            message.setRecipients(Message.RecipientType.TO, addressTo);
-
-            message.setSubject("Prueba de correo con SendGrid y adjuntos");
-
             // Crear el contenido del correo
             MimeBodyPart textPart = new MimeBodyPart();
-            textPart.setText("Este es un mensaje de prueba con texto plano y un archivo adjunto.", "utf-8");
 
+            // Crear el contenido del correo en html para que no detecte el mensaje como spam gmail
             MimeBodyPart htmlPart = new MimeBodyPart();
-            htmlPart.setContent("<h1>Este es un mensaje con adjunto</h1><p>Revisa el archivo adjunto para más detalles.</p>", "text/html");
+
+            message.setRecipients(Message.RecipientType.TO, addressTo);
+            switch (tipo.toLowerCase()) {
+                case "recupera":
+                    message.setSubject("");
+                    textPart.setText("Este es un mensaje de prueba con texto plano y un archivo adjunto.", "utf-8");
+                    htmlPart.setContent("<h1>Este es un mensaje con adjunto</h1><p>Revisa el archivo adjunto para más detalles.</p>", "text/html");
+                    break;
+                case "cambio":
+                    message.setSubject("");
+                    textPart.setText("Este es un mensaje de prueba con texto plano y un archivo adjunto.", "utf-8");
+                    htmlPart.setContent("<h1>Este es un mensaje con adjunto</h1><p>Revisa el archivo adjunto para más detalles.</p>", "text/html");
+                    break;
+                default:
+
+            }
 
             // Crear la parte del archivo adjunto
             MimeBodyPart attachmentPart = new MimeBodyPart();
@@ -83,4 +94,5 @@ public class EnvioCorreos {
             e.printStackTrace();
         }
     }
+
 }

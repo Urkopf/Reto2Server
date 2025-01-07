@@ -5,87 +5,138 @@
  */
 package crud.servicios;
 
+import crud.ejb.IGestorEntidadesLocal;
 import crud.entidades.Trabajador;
+import crud.excepciones.CreateException;
+import crud.excepciones.ReadException;
+import crud.excepciones.RemoveException;
+import crud.excepciones.UpdateException;
 import java.util.List;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import javax.ejb.EJB;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.util.logging.Logger;
+import java.util.logging.Level;
+import javax.xml.bind.annotation.XmlElementWrapper;
 
 /**
- *
- * @author 2dam
+ * Servicio REST para la entidad Trabajador.
  */
-@Stateless
-@Path("crud.entidades.trabajador")
-public class TrabajadorFacadeREST extends AbstractFacade<Trabajador> {
+@Path("trabajador")
+public class TrabajadorFacadeREST {
 
-    @PersistenceContext(unitName = "Reto2_CRUD_WebApplicationPU")
-    private EntityManager em;
+    @EJB
+    private IGestorEntidadesLocal ejb;
 
-    public TrabajadorFacadeREST() {
-        super(Trabajador.class);
-    }
+    private Logger LOGGER = Logger.getLogger(TrabajadorFacadeREST.class.getName());
 
     @POST
-    @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void create(Trabajador entity) {
-        super.create(entity);
+    public void create(Trabajador trabajador) {
+        try {
+            LOGGER.log(Level.INFO, "Creando Trabajador con ID {0}", trabajador.getId());
+            // Se asume que crear un Trabajador implica crearlo como Usuario y luego como Trabajador.
+            ejb.createUsuario(trabajador);
+            ejb.createTrabajador(trabajador);
+        } catch (CreateException e) {
+            LOGGER.severe(e.getMessage());
+            throw new InternalServerErrorException(e.getMessage());
+        }
     }
 
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void edit(@PathParam("id") Long id, Trabajador entity) {
-        super.edit(entity);
+    public void edit(Trabajador trabajador) {
+        try {
+            LOGGER.log(Level.INFO, "Actualizando Trabajador con ID {0}", trabajador.getId());
+            // Se asume que actualizar un Trabajador implica actualizar al Usuario asociado y al propio Trabajador.
+            ejb.updateUsuario(trabajador);
+            ejb.updateTrabajador(trabajador);
+        } catch (UpdateException e) {
+            LOGGER.severe(e.getMessage());
+            throw new InternalServerErrorException(e.getMessage());
+        }
     }
 
     @DELETE
     @Path("{id}")
     public void remove(@PathParam("id") Long id) {
-        super.remove(super.find(id));
+        try {
+            LOGGER.log(Level.INFO, "Borrando Trabajador con ID {0}", id);
+            // Primero encontramos el trabajador a eliminar
+            Trabajador trabajador = ejb.findTrabajador(id);
+            // Se asume que remover un Trabajador implica remover también al Usuario.
+            ejb.removeUsuario(trabajador);
+            ejb.removeTrabajador(trabajador);
+        } catch (ReadException | RemoveException e) {
+            LOGGER.severe(e.getMessage());
+            throw new InternalServerErrorException(e.getMessage());
+        }
     }
 
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Trabajador find(@PathParam("id") Long id) {
-        return super.find(id);
+        try {
+            LOGGER.log(Level.INFO, "Buscando Trabajador con ID {0}", id);
+            return ejb.findTrabajador(id);
+        } catch (ReadException e) {
+            LOGGER.severe(e.getMessage());
+            throw new InternalServerErrorException(e.getMessage());
+        }
     }
 
     @GET
-    @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Trabajador> findAll() {
-        return super.findAll();
+        try {
+            LOGGER.log(Level.INFO, "Buscando todos los Trabajadores");
+            return ejb.findAllTrabajador();
+        } catch (ReadException e) {
+            LOGGER.severe(e.getMessage());
+            throw new InternalServerErrorException(e.getMessage());
+        }
     }
 
     @GET
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Trabajador> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
-        return super.findRange(new int[]{from, to});
+        try {
+            LOGGER.log(Level.INFO, "Buscando Trabajadores desde {0} hasta {1}", new Object[]{from, to});
+            List<Trabajador> lista = ejb.findAllTrabajador();
+            int size = lista.size();
+            int start = (from != null && from >= 0 && from < size) ? from : 0;
+            int end = (to != null && to <= size && to > start) ? to : size;
+            return lista.subList(start, end);
+        } catch (ReadException e) {
+            LOGGER.severe(e.getMessage());
+            throw new InternalServerErrorException(e.getMessage());
+        }
     }
 
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
     public String countREST() {
-        return String.valueOf(super.count());
-    }
-
-    @Override
-    protected EntityManager getEntityManager() {
-        return em;
+        try {
+            LOGGER.info("Contando la cantidad total de Trabajadores.");
+            int count = ejb.findAllTrabajador().size();
+            return String.valueOf(count);
+        } catch (ReadException e) {
+            LOGGER.severe(e.getMessage());
+            throw new InternalServerErrorException(e.getMessage());
+        }
     }
 
 }

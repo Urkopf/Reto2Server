@@ -19,6 +19,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -32,6 +33,7 @@ import javax.xml.bind.annotation.XmlTransient;
  */
 @Entity
 @Table(name = "Pedido", schema = "reto2")
+@NamedQuery(name = "findAllPedido", query = "SELECT a FROM Cliente a ORDER BY a.id DESC")
 @XmlRootElement
 public class Pedido implements Serializable {
 
