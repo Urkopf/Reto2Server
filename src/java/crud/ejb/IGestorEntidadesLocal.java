@@ -107,5 +107,4 @@ public interface IGestorEntidadesLocal {
     public List<Almacen> findAllAlmacen() throws ReadException;
 
     //AÑADIR PERSONALIZADAS
-
 }
