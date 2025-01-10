@@ -5,12 +5,10 @@
  */
 package crud.entidades;
 
-import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.NamedQuery;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
@@ -28,27 +26,29 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Trabajador extends Usuario {
 
     @Column(name = "departamento")
-    private String departamento;
+    @Enumerated(EnumType.STRING)
+    private Departamento departamento;
 
     @Column(name = "categoria")
-    private String categoria;
+    @Enumerated(EnumType.STRING)
+    private Categoria categoria;
 
     public Trabajador() {
     }
 
-    public String getDepartamento() {
+    public Departamento getDepartamento() {
         return departamento;
     }
 
-    public void setDepartamento(String departamento) {
+    public void setDepartamento(Departamento departamento) {
         this.departamento = departamento;
     }
 
-    public String getCategoria() {
+    public Categoria getCategoria() {
         return categoria;
     }
 
-    public void setCategoria(String categoria) {
+    public void setCategoria(Categoria categoria) {
         this.categoria = categoria;
     }
 
