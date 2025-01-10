@@ -395,4 +395,38 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
         return almacen;
     }
 
+    @Override
+    public Usuario iniciarSesion(Usuario usuario) throws ReadException {
+        Usuario respuesta;
+        try {
+            //Hay que desencriptar la contraseña y demas......antes de usar esto
+            respuesta = (Usuario) em.createNamedQuery("inicioSesion").setParameter("correo", usuario.getCorreo()).setParameter("contrasena", usuario.getContrasena()).getResultList();
+        } catch (Exception e) {
+            throw new ReadException(e.getMessage());
+        }
+        return respuesta;
+    }
+
+    @Override
+    public Usuario cambioPass(Usuario usuario) throws ReadException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Boolean existeCorreo(Usuario usuario) throws ReadException {
+        try {
+            if ((Integer) em.createNamedQuery("existeCorreo").setParameter("correo", usuario.getCorreo()).getSingleResult() == 0) {
+                throw new ReadException();
+            }
+        } catch (Exception e) {
+            throw new ReadException(e.getMessage());
+        }
+        return Boolean.TRUE;
+    }
+
+    @Override
+    public Usuario recuperarPass(Usuario usuario) throws ReadException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }
