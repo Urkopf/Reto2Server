@@ -13,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -23,7 +24,12 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @Entity
 @Table(name = "usuario", schema = "reto2")
-@NamedQuery(name = "findAllUsuario", query = "SELECT a FROM Usuario a ORDER BY a.id DESC")
+@NamedQueries({
+    @NamedQuery(name = "findAllUsuario", query = "SELECT a FROM Usuario a ORDER BY a.id DESC")
+    ,
+    @NamedQuery(name = "inicioSesion", query = "SELECT a FROM Usuario a WHERE a.correo = :correo AND a.contrasena = :contrasena"),
+    @NamedQuery(name = "existeCorreo", query = "SELECT COUNT(a) FROM Usuario a WHERE a.correo = :correo")
+})
 @Inheritance(strategy = InheritanceType.JOINED)
 @XmlRootElement
 public class Usuario implements Serializable {
@@ -38,7 +44,7 @@ public class Usuario implements Serializable {
 
     private String correo;
 
-    private String contrasena;
+    private transient String contrasena;
 
     private String nombre;
 

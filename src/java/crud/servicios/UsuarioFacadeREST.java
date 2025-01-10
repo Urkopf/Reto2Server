@@ -25,7 +25,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.xml.bind.annotation.XmlElementWrapper;
 
 @Path("usuario")
 public class UsuarioFacadeREST {
@@ -81,6 +80,19 @@ public class UsuarioFacadeREST {
         try {
             LOGGER.log(Level.INFO, "Buscando usuario con ID {0}", id);
             return ejb.findUsuario(id);
+        } catch (ReadException ex) {
+            LOGGER.severe(ex.getMessage());
+            throw new InternalServerErrorException(ex.getMessage());
+        }
+    }
+
+    @GET
+    @Path("sesion")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Usuario inicioSesion(Usuario usuario) {
+        try {
+            LOGGER.log(Level.INFO, "Buscando usuario");
+            return ejb.iniciarSesion(usuario);
         } catch (ReadException ex) {
             LOGGER.severe(ex.getMessage());
             throw new InternalServerErrorException(ex.getMessage());
