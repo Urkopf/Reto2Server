@@ -34,6 +34,8 @@ public class Usuario implements Serializable {
     @Column(name = "usuario_id")
     private Long id;
 
+    private String cif;
+
     private String correo;
 
     private String contrasena;
@@ -56,6 +58,14 @@ public class Usuario implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getCif() {
+        return cif;
+    }
+
+    public void setCif(String cif) {
+        this.cif = cif;
     }
 
     public String getCorreo() {

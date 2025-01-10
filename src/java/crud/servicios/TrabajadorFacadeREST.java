@@ -25,7 +25,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.logging.Logger;
 import java.util.logging.Level;
-import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.ws.rs.core.Response;
 
 /**
  * Servicio REST para la entidad Trabajador.
@@ -40,12 +40,12 @@ public class TrabajadorFacadeREST {
 
     @POST
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void create(Trabajador trabajador) {
+    public Response create(Trabajador trabajador) {
         try {
-            LOGGER.log(Level.INFO, "Creando Trabajador con ID {0}", trabajador.getId());
-            // Se asume que crear un Trabajador implica crearlo como Usuario y luego como Trabajador.
-            ejb.createUsuario(trabajador);
+            //ejb.createUsuario(trabajador);
             ejb.createTrabajador(trabajador);
+            LOGGER.log(Level.INFO, "Creando Trabajador con ID {0}", trabajador.getId());
+            return Response.ok().build();
         } catch (CreateException e) {
             LOGGER.severe(e.getMessage());
             throw new InternalServerErrorException(e.getMessage());
@@ -55,12 +55,12 @@ public class TrabajadorFacadeREST {
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void edit(Trabajador trabajador) {
+    public Response edit(Trabajador trabajador) {
         try {
-            LOGGER.log(Level.INFO, "Actualizando Trabajador con ID {0}", trabajador.getId());
-            // Se asume que actualizar un Trabajador implica actualizar al Usuario asociado y al propio Trabajador.
-            ejb.updateUsuario(trabajador);
+            //ejb.updateUsuario(trabajador);
             ejb.updateTrabajador(trabajador);
+            LOGGER.log(Level.INFO, "Actualizando Trabajador con ID {0}", trabajador.getId());
+            return Response.ok().build();
         } catch (UpdateException e) {
             LOGGER.severe(e.getMessage());
             throw new InternalServerErrorException(e.getMessage());
@@ -69,14 +69,15 @@ public class TrabajadorFacadeREST {
 
     @DELETE
     @Path("{id}")
-    public void remove(@PathParam("id") Long id) {
+    public Response remove(@PathParam("id") Long id) {
         try {
-            LOGGER.log(Level.INFO, "Borrando Trabajador con ID {0}", id);
             // Primero encontramos el trabajador a eliminar
             Trabajador trabajador = ejb.findTrabajador(id);
             // Se asume que remover un Trabajador implica remover también al Usuario.
-            ejb.removeUsuario(trabajador);
+            //ejb.removeUsuario(trabajador);
             ejb.removeTrabajador(trabajador);
+            LOGGER.log(Level.INFO, "Borrando Trabajador con ID {0}", id);
+            return Response.ok().build();
         } catch (ReadException | RemoveException e) {
             LOGGER.severe(e.getMessage());
             throw new InternalServerErrorException(e.getMessage());
@@ -86,10 +87,16 @@ public class TrabajadorFacadeREST {
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Trabajador find(@PathParam("id") Long id) {
+    public Response find(@PathParam("id") Long id) {
         try {
             LOGGER.log(Level.INFO, "Buscando Trabajador con ID {0}", id);
-            return ejb.findTrabajador(id);
+            Trabajador trabajador = ejb.findTrabajador(id);
+            if (trabajador == null) {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("Trabajador con el ID: " + id)
+                        .build();
+            }
+            return Response.ok(trabajador).build();
         } catch (ReadException e) {
             LOGGER.severe(e.getMessage());
             throw new InternalServerErrorException(e.getMessage());

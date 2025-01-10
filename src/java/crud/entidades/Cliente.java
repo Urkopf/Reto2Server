@@ -5,12 +5,7 @@
  */
 package crud.entidades;
 
-import java.io.Serializable;
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.NamedQuery;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
@@ -32,8 +27,6 @@ public class Cliente extends Usuario {
     private double descuento;
 
     private String telefono;
-
-    private String cif;
 
     public Cliente() {
     }
@@ -60,14 +53,6 @@ public class Cliente extends Usuario {
 
     public void setTelefono(String telefono) {
         this.telefono = telefono;
-    }
-
-    public String getCif() {
-        return cif;
-    }
-
-    public void setCif(String cif) {
-        this.cif = cif;
     }
 
     @Override

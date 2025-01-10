@@ -12,12 +12,12 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -48,7 +48,8 @@ public class Pedido implements Serializable {
     private Date fechaPedido;
 
     @Column(name = "estado")
-    private String estado;
+    @Enumerated(EnumType.STRING)
+    private Estado estado;
 
     @Column(name = "total")
     private double total;
@@ -83,11 +84,11 @@ public class Pedido implements Serializable {
         this.fechaPedido = fechaPedido;
     }
 
-    public String getEstado() {
+    public Estado getEstado() {
         return estado;
     }
 
-    public void setEstado(String estado) {
+    public void setEstado(Estado estado) {
         this.estado = estado;
     }
 
