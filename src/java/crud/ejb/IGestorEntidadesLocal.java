@@ -107,7 +107,7 @@ public interface IGestorEntidadesLocal {
     public List<Almacen> findAllAlmacen() throws ReadException;
 
     //AÑADIR PERSONALIZADAS
-    public Usuario iniciarSesion(Usuario usuario) throws ReadException;
+    public List<Usuario> inicioSesion(String correo) throws ReadException;
 
     public Usuario cambioPass(Usuario usuario) throws ReadException;
 

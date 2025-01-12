@@ -27,8 +27,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "findAllUsuario", query = "SELECT a FROM Usuario a ORDER BY a.id DESC")
     ,
-    @NamedQuery(name = "inicioSesion", query = "SELECT a FROM Usuario a WHERE a.correo = :correo AND a.contrasena = :contrasena"),
-    @NamedQuery(name = "existeCorreo", query = "SELECT COUNT(a) FROM Usuario a WHERE a.correo = :correo")
+    @NamedQuery(name = "inicioSesion", query = "SELECT a FROM Usuario a WHERE a.correo = :correo")
 })
 @Inheritance(strategy = InheritanceType.JOINED)
 @XmlRootElement
@@ -44,7 +43,7 @@ public class Usuario implements Serializable {
 
     private String correo;
 
-    private transient String contrasena;
+    private String contrasena;
 
     private String nombre;
 

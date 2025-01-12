@@ -396,11 +396,11 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
     }
 
     @Override
-    public Usuario iniciarSesion(Usuario usuario) throws ReadException {
-        Usuario respuesta;
+    public List<Usuario> inicioSesion(String correo) throws ReadException {
+        List<Usuario> respuesta;
         try {
             //Hay que desencriptar la contraseña y demas......antes de usar esto
-            respuesta = (Usuario) em.createNamedQuery("inicioSesion").setParameter("correo", usuario.getCorreo()).setParameter("contrasena", usuario.getContrasena()).getResultList();
+            respuesta = em.createNamedQuery("inicioSesion").setParameter("correo", correo).getResultList();
         } catch (Exception e) {
             throw new ReadException(e.getMessage());
         }
