@@ -86,17 +86,26 @@ public class UsuarioFacadeREST {
         }
     }
 
+    /**
+     * Comprobar si el correo existe ya en la base de datos si devuelve NULL,
+     * puede logearse
+     *
+     * @param correo
+     * @return
+     */
     @GET
-    @Path("sesion")
+    @Path("sesion/{correo}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Usuario inicioSesion(Usuario usuario) {
+    public List<Usuario> inicioSesion(@PathParam("correo") String correo) {
+        List<Usuario> usuarios = null;
         try {
             LOGGER.log(Level.INFO, "Buscando usuario");
-            return ejb.iniciarSesion(usuario);
+            usuarios = ejb.inicioSesion(correo);
         } catch (ReadException ex) {
             LOGGER.severe(ex.getMessage());
             throw new InternalServerErrorException(ex.getMessage());
         }
+        return usuarios;
     }
 
     @GET
