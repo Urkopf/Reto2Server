@@ -25,8 +25,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 
 /**
  *
@@ -53,7 +51,7 @@ public class ArticuloFacadeREST {
     }
 
     @PUT
-    @Path("{id}")
+    //@Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void edit(Articulo entity) {
         try {

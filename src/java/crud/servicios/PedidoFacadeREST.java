@@ -25,7 +25,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.xml.bind.annotation.XmlElementWrapper;
 
 @Path("pedido")
 public class PedidoFacadeREST {
@@ -48,7 +47,7 @@ public class PedidoFacadeREST {
     }
 
     @PUT
-    @Path("{id}")
+    //@Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void edit(Pedido entity) {
         try {
