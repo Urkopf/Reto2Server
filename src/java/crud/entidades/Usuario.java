@@ -53,6 +53,8 @@ public class Usuario implements Serializable {
 
     private String codPostal;
 
+    private Boolean activo;
+
     public Usuario() {
     }
 
@@ -119,6 +121,14 @@ public class Usuario implements Serializable {
 
     public void setCodPostal(String codPostal) {
         this.codPostal = codPostal;
+    }
+
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
     }
 
     @Override

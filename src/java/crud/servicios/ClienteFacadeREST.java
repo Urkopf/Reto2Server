@@ -25,7 +25,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 @Path("cliente")
 public class ClienteFacadeREST {
@@ -37,12 +36,11 @@ public class ClienteFacadeREST {
 
     @POST
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response create(Cliente entity) {
+    public void create(Cliente entity) {
         try {
+            LOGGER.log(Level.INFO, "Creando cliente con ID {0}", entity.getId());
             //ejb.createUsuario(entity);
             ejb.createCliente(entity);
-            LOGGER.log(Level.INFO, "Creando cliente con ID {0}", entity.getId());
-            return Response.ok().build();
         } catch (CreateException ex) {
             LOGGER.severe(ex.getMessage());
             throw new InternalServerErrorException(ex.getMessage());
