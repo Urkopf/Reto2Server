@@ -27,13 +27,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "findAllUsuario", query = "SELECT a FROM Usuario a ORDER BY a.id DESC")
     ,
-    @NamedQuery(name = "inicioSesion", query = "SELECT a:id FROM Usuario a WHERE a.correo = :correo AND a.contrasena= :contrasena")
+    @NamedQuery(name = "inicioSesion", query = "SELECT a FROM Usuario a WHERE a.correo = :correo AND a.contrasena= :contrasena")
     ,
-    @NamedQuery(name = "escliente", query = "SELECT a FROM Cliente a WHERE a.id = :id")
+    @NamedQuery(name = "esCliente", query = "SELECT a FROM Cliente a WHERE a.id = :id")
     ,
     @NamedQuery(name = "esTrabajador", query = "SELECT a FROM Trabajador a WHERE a.id = :id")
 })
 @Inheritance(strategy = InheritanceType.JOINED)
+
 @XmlRootElement
 public class Usuario implements Serializable {
 

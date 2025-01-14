@@ -16,7 +16,10 @@ import crud.excepciones.CreateException;
 import crud.excepciones.ReadException;
 import crud.excepciones.RemoveException;
 import crud.excepciones.UpdateException;
+import crud.servicios.UsuarioFacadeREST;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -27,6 +30,8 @@ import javax.persistence.PersistenceContext;
  */
 @Stateless
 public class EJBGestorEntidades implements IGestorEntidadesLocal {
+
+    private Logger LOGGER = Logger.getLogger(EJBGestorEntidades.class.getName());
 
     @PersistenceContext(unitName = "Reto2_CRUD_WebApplicationPU")
     private EntityManager em;
@@ -399,6 +404,7 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
     public Object inicioSesion(Usuario usuario) throws ReadException {
         Object respuesta = null;
         Object respuesta2 = null;
+        LOGGER.log(Level.INFO, "Buscando usuario EJB: " + usuario.getCorreo());
         try {
             //Hay que desencriptar la contraseña y demas......antes de usar esto
             respuesta = em.createNamedQuery("inicioSesion")
@@ -410,6 +416,7 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
         }
 
         if (respuesta != null) {
+            LOGGER.log(Level.INFO, "Buscando si es cliente: " + ((Usuario) respuesta).getId());
             respuesta2 = em.createNamedQuery("esCliente")
                     .setParameter("id", ((Usuario) respuesta).getId())
                     .getSingleResult();
@@ -422,7 +429,7 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
 
             respuesta = respuesta2;
         }
-
+        LOGGER.log(Level.INFO, "Respuesta: " + respuesta.toString());
         return respuesta;
     }
 

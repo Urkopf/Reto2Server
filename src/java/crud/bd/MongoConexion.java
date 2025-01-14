@@ -14,16 +14,17 @@ import com.mongodb.client.MongoDatabase;
  * @author Ser_090
  */
 public class MongoConexion {
-
+    /*
     private static MongoClient mongoClient;
 
     //Metodo para obtener la conexion a la base de datos
     public static MongoDatabase getBaseDeDatos() {
         if (mongoClient == null) {
-            String uri = "mongodb://localhost:27017";
-            mongoClient = new MongoClient(new MongoClientURI(uri));
+            //String uri = "mongodb://localhost:27017";
+            String uri = "";
+            // mongoClient = new MongoClient(new MongoClientURI(uri));
         }
-        return mongoClient.getDatabase("miBaseDeDatos");
+       // return mongoClient.getDatabase("miBaseDeDatos");
     }
 
     //Metodo para cerrar la conexion
@@ -32,5 +33,5 @@ public class MongoConexion {
             mongoClient.close();
         }
     }
-
+     */
 }

@@ -16,7 +16,7 @@ import org.bson.BasicBSONObject;
  * @author Ser_090
  */
 public class EjemploUso {
-
+    /*
     private final MongoCollection<BasicBSONObject> userCollection;
 
     public EjemploUso() {
@@ -37,4 +37,5 @@ public class EjemploUso {
         user.put("edad", age);
         userCollection.insertOne(user);
     }
+     */
 }

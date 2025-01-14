@@ -93,19 +93,20 @@ public class UsuarioFacadeREST {
      * @param correo
      * @return
      */
-    @GET
-    @Path("sesion/{usuario}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Object inicioSesion(@PathParam("usuario") Usuario usuario) {
-        Object user = null;
+    @POST
+    @Path("/sesion")
+    @Consumes(MediaType.APPLICATION_XML)
+    @Produces(MediaType.APPLICATION_XML)
+    public Object inicioSesion(Usuario usuario) {
+        Object resultado = null;
         try {
-            LOGGER.log(Level.INFO, "Buscando usuario");
-            user = ejb.inicioSesion(usuario);
+            LOGGER.log(Level.INFO, "Buscando usuario: " + usuario.getCorreo());
+            resultado = ejb.inicioSesion(usuario); // Devuelve Cliente o Trabajador
         } catch (ReadException ex) {
             LOGGER.severe(ex.getMessage());
             throw new InternalServerErrorException(ex.getMessage());
         }
-        return user;
+        return resultado;
     }
 
     @GET
