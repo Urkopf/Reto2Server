@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "findAllUsuario", query = "SELECT a FROM Usuario a ORDER BY a.id DESC")
     ,
-    @NamedQuery(name = "inicioSesion", query = "SELECT a FROM Usuario a WHERE a.correo = :correo")
+    @NamedQuery(name = "inicioSesion", query = "SELECT a FROM Usuario a WHERE a.correo = :correo AND a.contrasena= :contrasena")
 })
 @Inheritance(strategy = InheritanceType.JOINED)
 @XmlRootElement
