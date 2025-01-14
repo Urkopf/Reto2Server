@@ -94,9 +94,9 @@ public class UsuarioFacadeREST {
      * @return
      */
     @GET
-    @Path("sesion")
+    @Path("sesion/{usuario}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Object inicioSesion(Usuario usuario) {
+    public Object inicioSesion(@PathParam("usuario") Usuario usuario) {
         Object user = null;
         try {
             LOGGER.log(Level.INFO, "Buscando usuario");
