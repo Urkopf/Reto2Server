@@ -40,12 +40,11 @@ public class TrabajadorFacadeREST {
 
     @POST
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response create(Trabajador trabajador) {
+    public void create(Trabajador trabajador) {
         try {
+            LOGGER.log(Level.INFO, "Creando Trabajador con ID {0}", trabajador.getId());
             //ejb.createUsuario(trabajador);
             ejb.createTrabajador(trabajador);
-            LOGGER.log(Level.INFO, "Creando Trabajador con ID {0}", trabajador.getId());
-            return Response.ok().build();
         } catch (CreateException e) {
             LOGGER.severe(e.getMessage());
             throw new InternalServerErrorException(e.getMessage());
@@ -55,12 +54,11 @@ public class TrabajadorFacadeREST {
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response edit(Trabajador trabajador) {
+    public void edit(Trabajador trabajador) {
         try {
+            LOGGER.log(Level.INFO, "Actualizando Trabajador con ID {0}", trabajador.getId());
             //ejb.updateUsuario(trabajador);
             ejb.updateTrabajador(trabajador);
-            LOGGER.log(Level.INFO, "Actualizando Trabajador con ID {0}", trabajador.getId());
-            return Response.ok().build();
         } catch (UpdateException e) {
             LOGGER.severe(e.getMessage());
             throw new InternalServerErrorException(e.getMessage());
@@ -69,15 +67,14 @@ public class TrabajadorFacadeREST {
 
     @DELETE
     @Path("{id}")
-    public Response remove(@PathParam("id") Long id) {
+    public void remove(@PathParam("id") Long id) {
         try {
+            LOGGER.log(Level.INFO, "Borrando Trabajador con ID {0}", id);
             // Primero encontramos el trabajador a eliminar
             Trabajador trabajador = ejb.findTrabajador(id);
             // Se asume que remover un Trabajador implica remover también al Usuario.
             //ejb.removeUsuario(trabajador);
             ejb.removeTrabajador(trabajador);
-            LOGGER.log(Level.INFO, "Borrando Trabajador con ID {0}", id);
-            return Response.ok().build();
         } catch (ReadException | RemoveException e) {
             LOGGER.severe(e.getMessage());
             throw new InternalServerErrorException(e.getMessage());
