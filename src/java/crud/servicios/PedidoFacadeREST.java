@@ -47,7 +47,6 @@ public class PedidoFacadeREST {
     }
 
     @PUT
-    //@Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void edit(Pedido entity) {
         try {
