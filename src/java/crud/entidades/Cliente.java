@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @Entity
 @Table(name = "cliente", schema = "reto2")
-@NamedQuery(name = "findAllCliente", query = "SELECT a FROM Cliente a ORDER BY a.id DESC")
+@NamedQuery(name = "findAllCliente", query = "SELECT a FROM Cliente a")
 @PrimaryKeyJoinColumn(name = "usuario_id")
 @XmlRootElement
 public class Cliente extends Usuario {

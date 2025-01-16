@@ -7,7 +7,6 @@ package crud.entidades;
 
 import java.io.Serializable;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -25,7 +24,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @Entity
 @Table(name = "pedido_articulo", schema = "reto2")
-@NamedQuery(name = "findAllPedidoArticulo", query = "SELECT a FROM PedidoArticulo a ORDER BY a.id DESC")
+@NamedQuery(name = "findAllPedidoArticulo", query = "SELECT a FROM PedidoArticulo a")
 @XmlRootElement
 public class PedidoArticulo implements Serializable {
 

@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlTransient;
  */
 @Entity
 @Table(name = "articulo", schema = "reto2")
-@NamedQuery(name = "findAllArticulo", query = "SELECT a FROM Articulo a ORDER BY a.id DESC")
+@NamedQuery(name = "findAllArticulo", query = "SELECT a FROM Articulo a")
 @XmlRootElement
 public class Articulo implements Serializable {
 
