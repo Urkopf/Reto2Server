@@ -28,6 +28,7 @@ public class ApplicationConfig extends Application {
      * out calling this method in getClasses().
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
+        resources.add(crud.excepciones.ManejadorGlobarExcepciones.class);
         resources.add(crud.servicios.AlmacenFacadeREST.class);
         resources.add(crud.servicios.ArticuloFacadeREST.class);
         resources.add(crud.servicios.ClienteFacadeREST.class);

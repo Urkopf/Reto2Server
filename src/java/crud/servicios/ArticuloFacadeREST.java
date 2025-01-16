@@ -7,7 +7,6 @@ package crud.servicios;
 
 import crud.ejb.IGestorEntidadesLocal;
 import crud.entidades.Articulo;
-import crud.excepciones.CreateException;
 import crud.excepciones.ReadException;
 import crud.excepciones.RemoveException;
 import crud.excepciones.UpdateException;
@@ -44,9 +43,8 @@ public class ArticuloFacadeREST {
         try {
             LOGGER.log(Level.INFO, "Creando articulo con ID {0}", entity.getId());
             ejb.createArticulo(entity);
-        } catch (CreateException ex) {
+        } catch (Exception ex) {
             LOGGER.severe(ex.getMessage());
-            throw new InternalServerErrorException(ex.getMessage());
         }
     }
 
