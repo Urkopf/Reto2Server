@@ -25,6 +25,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Response;
 
 /**
@@ -52,12 +53,18 @@ public class TrabajadorFacadeREST {
     }
 
     @PUT
-    @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void edit(Trabajador trabajador) {
+    public void edit(Trabajador trabajador) throws ReadException {
         try {
             LOGGER.log(Level.INFO, "Actualizando Trabajador con ID {0}", trabajador.getId());
-            //ejb.updateUsuario(trabajador);
+            Trabajador trabajadorActual = ejb.findTrabajador(trabajador.getId());
+            if (trabajadorActual == null) {
+                throw new NotFoundException("Cliente no encontrado con ID: " + trabajador.getId());
+            }
+
+            // Mantener la contraseña existente
+            trabajador.setContrasena(trabajadorActual.getContrasena());
+
             ejb.updateTrabajador(trabajador);
         } catch (UpdateException e) {
             LOGGER.severe(e.getMessage());

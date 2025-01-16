@@ -19,6 +19,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -48,13 +49,22 @@ public class ClienteFacadeREST {
     }
 
     @PUT
-    @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void edit(Cliente entity) {
+    public void edit(Cliente entity) throws ReadException {
         try {
             LOGGER.log(Level.INFO, "Actualizando cliente con ID {0}", entity.getId());
             // Aseguramos que el ID del entity coincide con el de la ruta
-            ejb.updateUsuario(entity);
+
+            // Obtener el cliente actual de la base de datos
+            Cliente clienteActual = ejb.findCliente(entity.getId());
+            if (clienteActual == null) {
+                throw new NotFoundException("Cliente no encontrado con ID: " + entity.getId());
+            }
+
+            // Mantener la contraseña existente
+            entity.setContrasena(clienteActual.getContrasena());
+
+            // Actualizar el cliente
             ejb.updateCliente(entity);
         } catch (UpdateException ex) {
             LOGGER.severe(ex.getMessage());
