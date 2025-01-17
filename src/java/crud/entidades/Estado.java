@@ -10,5 +10,5 @@ package crud.entidades;
  * @author Urko
  */
 public enum Estado {
-    PREPARACION, ENVIADO, CANCELADO, INDICENCIA, COMPLETADO
+    PREPARACION, ENVIADO, CANCELADO, INCIDENCIA, COMPLETADO
 }
