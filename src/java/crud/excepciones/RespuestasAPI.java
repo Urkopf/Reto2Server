@@ -21,6 +21,11 @@ public class RespuestasAPI {
     public RespuestasAPI() {
     }
 
+    public RespuestasAPI(int codigoEstado, String mensaje) {
+        this.codigoEstado = codigoEstado;
+        this.mensaje = mensaje;
+    }
+
     public RespuestasAPI(int codigoEstado, String mensaje, Object detalles) {
         this.codigoEstado = codigoEstado;
         this.mensaje = mensaje;

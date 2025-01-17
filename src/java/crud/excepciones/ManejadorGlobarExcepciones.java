@@ -5,6 +5,7 @@
  */
 package crud.excepciones;
 
+import java.util.logging.Logger;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -15,10 +16,12 @@ import javax.ws.rs.ext.Provider;
  * @author Sergio
  */
 @Provider
-public class ManejadorGlobarExcepciones implements ExceptionMapper<Throwable> {
+public class ManejadorGlobarExcepciones implements ExceptionMapper<Exception> {
+
+    private static final Logger LOGGER = Logger.getLogger(ManejadorGlobarExcepciones.class.getName());
 
     @Override
-    public Response toResponse(Throwable exception) {
+    public Response toResponse(Exception exception) {
 
         RespuestasAPI respuestaError = null;
         Response.Status status = null;
@@ -46,8 +49,7 @@ public class ManejadorGlobarExcepciones implements ExceptionMapper<Throwable> {
             status = Response.Status.INTERNAL_SERVER_ERROR;
             respuestaError = new RespuestasAPI(
                     status.getStatusCode(),
-                    "Error inesperado",
-                    exception.getMessage());
+                    "Error del servidor interno,Por favor, intente nuevamente más tarde.");
         }
 
         return Response

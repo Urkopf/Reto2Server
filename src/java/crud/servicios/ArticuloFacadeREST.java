@@ -7,6 +7,7 @@ package crud.servicios;
 
 import crud.ejb.IGestorEntidadesLocal;
 import crud.entidades.Articulo;
+import crud.excepciones.CreateException;
 import crud.excepciones.ReadException;
 import crud.excepciones.RemoveException;
 import crud.excepciones.UpdateException;
@@ -40,18 +41,14 @@ public class ArticuloFacadeREST {
 
     @POST
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response create(Articulo entity) {
-        try {
-            LOGGER.log(Level.INFO, "Creando articulo con ID {0}", entity.getId());
-            ejb.createArticulo(entity);
-        } catch (Exception ex) {
-            LOGGER.severe(ex.getMessage());
-        }
+    public Response create(Articulo entity) throws CreateException {
+        LOGGER.log(Level.INFO, "Creando articulo con ID {0}", entity.getId());
+        ejb.createArticulo(entity);
         return Response.status(Response.Status.CREATED).build();
+
     }
 
     @PUT
-    //@Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void edit(Articulo entity) {
         try {
