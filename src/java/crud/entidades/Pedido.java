@@ -43,6 +43,10 @@ public class Pedido implements Serializable {
     @Column(name = "id_pedido")
     private Long id;
 
+    @Column(name = "direccion")
+    @Enumerated(EnumType.STRING)
+    private String direccion;
+
     @Temporal(TemporalType.DATE)
     @Column(name = "fecha_pedido")
     private Date fechaPedido;
@@ -74,6 +78,14 @@ public class Pedido implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
     }
 
     public Date getFechaPedido() {
