@@ -44,7 +44,6 @@ public class Pedido implements Serializable {
     private Long id;
 
     @Column(name = "direccion")
-    @Enumerated(EnumType.STRING)
     private String direccion;
 
     @Temporal(TemporalType.DATE)
