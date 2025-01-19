@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @Entity
 @Table(name = "pedido_articulo", schema = "reto2")
-@NamedQuery(name = "findAllPedidoArticulo", query = "SELECT a FROM PedidoArticulo a ORDER BY a.id DESC")
+@NamedQuery(name = "findAllPedidoArticulo", query = "SELECT a FROM PedidoArticulo a")
 @XmlRootElement
 public class PedidoArticulo implements Serializable {
 
@@ -35,20 +35,12 @@ public class PedidoArticulo implements Serializable {
     @Column(name = "pedido_articulo_id")
     private Long id;
 
-    @Column(name = "pedido_id")
-    private Long pedidoId;
-
-    @Column(name = "articulo_id")
-    private Long articuloId;
-
     @ManyToOne
-    @MapsId("pedidoId")
-    @JoinColumn(name = "pedido_id")
+    @JoinColumn(name = "pedido_id", nullable = false)
     private Pedido pedido;
 
     @ManyToOne
-    @MapsId("articuloId")
-    @JoinColumn(name = "id_articulo")
+    @JoinColumn(name = "articulo_id", nullable = false)
     private Articulo articulo;
 
     @Column(name = "cantidad")
@@ -60,10 +52,8 @@ public class PedidoArticulo implements Serializable {
     public PedidoArticulo() {
     }
 
-    public PedidoArticulo(Long id, Long pedidoId, Long articuloId, Pedido pedido, Articulo articulo, int cantidad, double precioCompra) {
+    public PedidoArticulo(Long id, Pedido pedido, Articulo articulo, int cantidad, double precioCompra) {
         this.id = id;
-        this.pedidoId = pedidoId;
-        this.articuloId = articuloId;
         this.pedido = pedido;
         this.articulo = articulo;
         this.cantidad = cantidad;
@@ -75,24 +65,8 @@ public class PedidoArticulo implements Serializable {
         return id;
     }
 
-    public void setPedidoArticuloId(Long id) {
+    public void setId(Long id) {
         this.id = id;
-    }
-
-    public Long getPedidoId() {
-        return pedidoId;
-    }
-
-    public void setPedidoId(Long pedidoId) {
-        this.pedidoId = pedidoId;
-    }
-
-    public Long getArticuloId() {
-        return articuloId;
-    }
-
-    public void setArticuloId(Long articuloId) {
-        this.articuloId = articuloId;
     }
 
     public Pedido getPedido() {
