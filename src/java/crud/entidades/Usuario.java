@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(name = "usuario", schema = "reto2")
 @NamedQueries({
-    @NamedQuery(name = "findAllUsuario", query = "SELECT a FROM Usuario a ORDER BY a.id DESC")
+    @NamedQuery(name = "findAllUsuario", query = "SELECT a FROM Usuario a")
     ,
     @NamedQuery(name = "inicioSesion", query = "SELECT a FROM Usuario a WHERE a.correo = :correo AND a.contrasena= :contrasena")
     ,

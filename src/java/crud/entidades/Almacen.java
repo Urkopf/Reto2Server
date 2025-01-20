@@ -26,7 +26,7 @@ import javax.xml.bind.annotation.XmlTransient;
  */
 @Entity
 @Table(name = "almacen", schema = "reto2")
-@NamedQuery(name = "findAllAlmacen", query = "SELECT a FROM Almacen a ORDER BY a.id DESC")
+@NamedQuery(name = "findAllAlmacen", query = "SELECT a FROM Almacen a")
 @XmlRootElement
 public class Almacen implements Serializable {
 

@@ -12,7 +12,10 @@ import crud.excepciones.ReadException;
 import crud.excepciones.RemoveException;
 import crud.excepciones.UpdateException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.EJB;
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -41,14 +44,20 @@ public class TrabajadorFacadeREST {
 
     @POST
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void create(Trabajador trabajador) {
+    public void create(Trabajador entity) {
         try {
-            LOGGER.log(Level.INFO, "Creando Trabajador con ID {0}", trabajador.getId());
+            if (entity == null) {
+                throw new BadRequestException("El Trabajador esta incompleto o vacio");
+            }
+            LOGGER.log(Level.INFO, "Creando Trabajador con ID {0}", entity.getId());
             //ejb.createUsuario(trabajador);
-            ejb.createTrabajador(trabajador);
+            ejb.createTrabajador(entity);
         } catch (CreateException e) {
             LOGGER.severe(e.getMessage());
             throw new InternalServerErrorException(e.getMessage());
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Error inesperado: {0}", ex.getMessage());
+            throw new InternalServerErrorException("Error interno del servidor.");
         }
     }
 
@@ -69,6 +78,9 @@ public class TrabajadorFacadeREST {
         } catch (UpdateException e) {
             LOGGER.severe(e.getMessage());
             throw new InternalServerErrorException(e.getMessage());
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Error inesperado: {0}", ex.getMessage());
+            throw new InternalServerErrorException("Error interno del servidor.");
         }
     }
 
@@ -85,6 +97,9 @@ public class TrabajadorFacadeREST {
         } catch (ReadException | RemoveException e) {
             LOGGER.severe(e.getMessage());
             throw new InternalServerErrorException(e.getMessage());
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Error inesperado: {0}", ex.getMessage());
+            throw new InternalServerErrorException("Error interno del servidor.");
         }
     }
 
@@ -104,6 +119,9 @@ public class TrabajadorFacadeREST {
         } catch (ReadException e) {
             LOGGER.severe(e.getMessage());
             throw new InternalServerErrorException(e.getMessage());
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Error inesperado: {0}", ex.getMessage());
+            throw new InternalServerErrorException("Error interno del servidor.");
         }
     }
 
@@ -116,6 +134,9 @@ public class TrabajadorFacadeREST {
         } catch (ReadException e) {
             LOGGER.severe(e.getMessage());
             throw new InternalServerErrorException(e.getMessage());
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Error inesperado: {0}", ex.getMessage());
+            throw new InternalServerErrorException("Error interno del servidor.");
         }
     }
 
@@ -133,6 +154,9 @@ public class TrabajadorFacadeREST {
         } catch (ReadException e) {
             LOGGER.severe(e.getMessage());
             throw new InternalServerErrorException(e.getMessage());
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Error inesperado: {0}", ex.getMessage());
+            throw new InternalServerErrorException("Error interno del servidor.");
         }
     }
 
@@ -147,6 +171,9 @@ public class TrabajadorFacadeREST {
         } catch (ReadException e) {
             LOGGER.severe(e.getMessage());
             throw new InternalServerErrorException(e.getMessage());
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Error inesperado: {0}", ex.getMessage());
+            throw new InternalServerErrorException("Error interno del servidor.");
         }
     }
 

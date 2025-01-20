@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -25,7 +26,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.xml.bind.annotation.XmlElementWrapper;
 
 /**
  *
@@ -43,11 +43,17 @@ public class AlmacenFacadeREST {
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void create(Almacen entity) {
         try {
+            if (entity == null) {
+                throw new BadRequestException("El Almacen esta incompleto o vacio");
+            }
             LOGGER.log(Level.INFO, "Creando almacen {0}", entity.getId());
             ejb.createAlmacen(entity);
         } catch (CreateException ex) {
             LOGGER.severe(ex.getMessage());
             throw new InternalServerErrorException(ex.getMessage());
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Error inesperado: {0}", ex.getMessage());
+            throw new InternalServerErrorException("Error interno del servidor.");
         }
     }
 
@@ -60,6 +66,9 @@ public class AlmacenFacadeREST {
         } catch (UpdateException ex) {
             LOGGER.severe(ex.getMessage());
             throw new InternalServerErrorException(ex.getMessage());
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Error inesperado: {0}", ex.getMessage());
+            throw new InternalServerErrorException("Error interno del servidor.");
         }
     }
 
@@ -72,6 +81,9 @@ public class AlmacenFacadeREST {
         } catch (ReadException | RemoveException ex) {
             LOGGER.severe(ex.getMessage());
             throw new InternalServerErrorException(ex.getMessage());
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Error inesperado: {0}", ex.getMessage());
+            throw new InternalServerErrorException("Error interno del servidor.");
         }
     }
 
@@ -85,6 +97,9 @@ public class AlmacenFacadeREST {
         } catch (ReadException ex) {
             LOGGER.severe(ex.getMessage());
             throw new InternalServerErrorException(ex.getMessage());
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Error inesperado: {0}", ex.getMessage());
+            throw new InternalServerErrorException("Error interno del servidor.");
         }
     }
 
@@ -97,6 +112,9 @@ public class AlmacenFacadeREST {
         } catch (ReadException ex) {
             LOGGER.severe(ex.getMessage());
             throw new InternalServerErrorException(ex.getMessage());
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Error inesperado: {0}", ex.getMessage());
+            throw new InternalServerErrorException("Error interno del servidor.");
         }
     }
 
@@ -115,6 +133,9 @@ public class AlmacenFacadeREST {
         } catch (ReadException ex) {
             LOGGER.severe(ex.getMessage());
             throw new InternalServerErrorException(ex.getMessage());
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Error inesperado: {0}", ex.getMessage());
+            throw new InternalServerErrorException("Error interno del servidor.");
         }
     }
 
@@ -129,6 +150,9 @@ public class AlmacenFacadeREST {
         } catch (ReadException ex) {
             LOGGER.severe(ex.getMessage());
             throw new InternalServerErrorException(ex.getMessage());
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Error inesperado: {0}", ex.getMessage());
+            throw new InternalServerErrorException("Error interno del servidor.");
         }
     }
 
