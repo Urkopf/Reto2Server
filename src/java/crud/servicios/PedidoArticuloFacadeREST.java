@@ -66,7 +66,9 @@ public class PedidoArticuloFacadeREST {
         try {
             LOGGER.log(Level.INFO, "Borrando pedido-artículo con ID {0}", id);
             PedidoArticulo pedidoArticulo = ejb.findPedidoArticulo(id);
+            LOGGER.log(Level.INFO, "ENCONTRADO pedido-artículo con ID {0}", pedidoArticulo.getId());
             ejb.removePedidoArticulo(pedidoArticulo);
+            LOGGER.log(Level.INFO, "BORRRADO pedido-artículo con ID {0}", id);
         } catch (ReadException | RemoveException ex) {
             LOGGER.severe(ex.getMessage());
             throw new InternalServerErrorException(ex.getMessage());

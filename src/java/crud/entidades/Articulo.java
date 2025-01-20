@@ -54,7 +54,7 @@ public class Articulo implements Serializable {
     @Column(name = "fecha_reposicion")
     private Date fechaReposicion;
 
-    @OneToMany(mappedBy = "articulo", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "articulo")
     private Set<PedidoArticulo> pedidoArticulos = new HashSet<>();
 
     public Articulo() {

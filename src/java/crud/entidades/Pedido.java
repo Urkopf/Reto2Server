@@ -40,7 +40,7 @@ public class Pedido implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_pedido")
+    @Column(name = "pedido_id")
     private Long id;
 
     @Column(name = "direccion")
@@ -65,7 +65,7 @@ public class Pedido implements Serializable {
     private Cliente cliente;
 
     // Relación uno a muchos con PedidoArticulo
-    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "pedido")
     private Set<PedidoArticulo> pedidoArticulos = new HashSet<>();
 
     public Pedido() {
