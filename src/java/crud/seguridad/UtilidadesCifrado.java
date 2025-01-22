@@ -1,219 +1,101 @@
 package crud.seguridad;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.ByteArrayOutputStream;
 import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 import java.security.*;
+
+import java.util.Base64;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.Base64;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
 
 public class UtilidadesCifrado {
 
-    // Generar una clave simétrica AES
-    public static SecretKey generarClaveSimetrica() throws Exception {
-        KeyGenerator generadorClave = KeyGenerator.getInstance("AES");
-        generadorClave.init(128);
-        return generadorClave.generateKey();
+    private static final String RUTA_CLAVE_PUBLICA = "crud/seguridad/clave_publica.key";
+    private static final String RUTA_CLAVE_PRIVADA = "crud/seguridad/clave_privada.key";
+
+    // Generar y guardar claves en archivos
+    public static void generarYGuardarClaves() throws Exception {
+        KeyPair claves = generarParDeClaves();
+        guardarClave(claves.getPublic(), RUTA_CLAVE_PUBLICA);
+        guardarClave(claves.getPrivate(), RUTA_CLAVE_PRIVADA);
     }
 
-    // Cifrar datos con AES
-    public static byte[] cifrarConAES(String datos, SecretKey claveSimetrica, byte[] iv) throws Exception {
-        Cipher cifrador = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        IvParameterSpec parametrosIV = new IvParameterSpec(iv);
-        cifrador.init(Cipher.ENCRYPT_MODE, claveSimetrica, parametrosIV);
-        return cifrador.doFinal(datos.getBytes());
+    // Generar par de claves públicas y privadas
+    public static KeyPair generarParDeClaves() throws NoSuchAlgorithmException {
+        KeyPairGenerator generador = KeyPairGenerator.getInstance("RSA");
+        generador.initialize(2048);
+        return generador.generateKeyPair();
     }
 
-    // Descifrar datos con AES
-    public static String descifrarConAES(byte[] datosCifrados, SecretKey claveSimetrica, byte[] iv) throws Exception {
-        Cipher cifrador = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        IvParameterSpec parametrosIV = new IvParameterSpec(iv);
-        cifrador.init(Cipher.DECRYPT_MODE, claveSimetrica, parametrosIV);
-        byte[] datosDescifrados = cifrador.doFinal(datosCifrados);
-        return new String(datosDescifrados);
-    }
-
-    // Cifrar clave simétrica con RSA (clave pública)
-    public static byte[] cifrarClaveSimetricaConRSA(SecretKey claveSimetrica, PublicKey clavePublica) throws Exception {
-        Cipher cifrador = Cipher.getInstance("RSA");
-        cifrador.init(Cipher.ENCRYPT_MODE, clavePublica);
-        return cifrador.doFinal(claveSimetrica.getEncoded());
-    }
-
-    // Descifrar clave simétrica con RSA (clave privada)
-    public static SecretKey descifrarClaveSimetricaConRSA(byte[] claveCifrada, PrivateKey clavePrivada) throws Exception {
-        Cipher cifrador = Cipher.getInstance("RSA");
-        cifrador.init(Cipher.DECRYPT_MODE, clavePrivada);
-        byte[] claveDescifrada = cifrador.doFinal(claveCifrada);
-        return new SecretKeySpec(claveDescifrada, "AES");
-    }
-
-    // Convertir una clave pública desde Base64
-    public static PublicKey obtenerClavePublicaDesdeBase64(String claveBase64) throws Exception {
-        byte[] bytesClave = Base64.getDecoder().decode(claveBase64);
-        X509EncodedKeySpec spec = new X509EncodedKeySpec(bytesClave);
-        KeyFactory fabricaClaves = KeyFactory.getInstance("RSA");
-        return fabricaClaves.generatePublic(spec);
-    }
-
-    // Convertir una clave privada desde Base64
-    public static PrivateKey obtenerClavePrivadaDesdeBase64(String claveBase64) throws Exception {
-        byte[] bytesClave = Base64.getDecoder().decode(claveBase64);
-        PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(bytesClave);
-        KeyFactory fabricaClaves = KeyFactory.getInstance("RSA");
-        return fabricaClaves.generatePrivate(spec);
-    }
-
-    // Generar un vector de inicialización (IV) para AES
-    public static byte[] generarVectorInicializacion() {
-        byte[] iv = new byte[16];
-        new SecureRandom().nextBytes(iv);
-        return iv;
-    }
-
-    // Hashear una contraseña usando PBKDF2
-    public static String hashearContrasena(String contrasena, byte[] salt) throws Exception {
-        int iteraciones = 65536;
-        int longitudClave = 128;
-
-        PBEKeySpec spec = new PBEKeySpec(contrasena.toCharArray(), salt, iteraciones, longitudClave);
-        SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-        byte[] hash = skf.generateSecret(spec).getEncoded();
-        return Base64.getEncoder().encodeToString(hash);
-    }
-
-    // Generar un salt aleatorio
-    public static byte[] generarSalt() {
-        byte[] salt = new byte[16];
-        new SecureRandom().nextBytes(salt);
-        return salt;
-    }
-
-    // Verificar una contraseña contra un hash
-    public static boolean verificarContrasena(String contrasena, String hash, byte[] salt) throws Exception {
-        String hashGenerado = hashearContrasena(contrasena, salt);
-        return hashGenerado.equals(hash);
-    }
-
-    // Generar una contraseña temporal
-    public static String generarContrasenaTemporal() {
-        SecureRandom random = new SecureRandom();
-        int longitud = 10;
-        String caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        StringBuilder contrasena = new StringBuilder(longitud);
-        for (int i = 0; i < longitud; i++) {
-            contrasena.append(caracteres.charAt(random.nextInt(caracteres.length())));
-        }
-        return contrasena.toString();
-    }
-
-    public static PublicKey cargarClavePublicaDesdePEM(String rutaArchivo) throws Exception {
-        // Leer el contenido del archivo
-        String contenido = new String(Files.readAllBytes(Paths.get(rutaArchivo)));
-
-        // Decodificar el contenido Base64
-        byte[] bytesClave = Base64.getDecoder().decode(contenido);
-
-        // Convertir a PublicKey usando X509EncodedKeySpec
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        X509EncodedKeySpec spec = new X509EncodedKeySpec(bytesClave);
-        return keyFactory.generatePublic(spec);
-    }
-
-    public static PrivateKey cargarClavePrivadaDesdePEM() throws Exception {
-        // Leer el archivo desde el classpath
-        try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(ClassLoader.getSystemResourceAsStream("clave_privada.pem")))) {
-
-            StringBuilder contenido = new StringBuilder();
-            System.out.println("Ruta cargada: " + ClassLoader.getSystemResource("clave_privada.pem"));
-            System.out.println("Contenido leído: " + contenido.toString());
-
-            // Decodificar el contenido Base64
-            byte[] bytesClave = Base64.getDecoder().decode(contenido.toString());
-
-            // Crear una clave privada desde los bytes decodificados
-            PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(bytesClave);
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-            return keyFactory.generatePrivate(spec);
-
-        } catch (Exception e) {
-            throw new Exception("Error al cargar la clave privada desde el archivo PEM", e);
+    // Guardar clave en archivo
+    private static void guardarClave(Key clave, String ruta) throws IOException {
+        try (FileOutputStream fos = new FileOutputStream(ruta)) {
+            fos.write(clave.getEncoded());
         }
     }
 
-
-    /*
-    public static PrivateKey cargarClavePrivadaDesdePEM(String rutaArchivo) throws Exception {
-        // Leer el contenido del archivo
-        String contenido = new String(Files.readAllBytes(Paths.get(rutaArchivo)));
-
-        // Decodificar el contenido Base64
-        byte[] bytesClave = Base64.getDecoder().decode(contenido);
-
-        // Convertir a PrivateKey usando PKCS8EncodedKeySpec
+    // Cargar clave pública desde archivo
+    public static PublicKey cargarClavePublica() throws Exception {
+        byte[] claveBytes = leerArchivo(RUTA_CLAVE_PUBLICA);
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(bytesClave);
-        return keyFactory.generatePrivate(spec);
-    }*/
- /*public PrivateKey cargarClavePrivadaDesdePEM() throws Exception {
+        return keyFactory.generatePublic(new X509EncodedKeySpec(claveBytes));
+    }
 
-        byte ruta[] = fileReader(getClass().getResource("clave_privada.pem").getPath());
+    // Cargar clave privada desde archivo
+    public static PrivateKey cargarClavePrivada() throws Exception {
+        byte[] claveBytes = leerArchivo(RUTA_CLAVE_PRIVADA);
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(claveBytes));
+    }
 
-        StringBuilder contenido = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new FileReader(ruta))) {
-            String linea;
-            while ((linea = reader.readLine()) != null) {
-                contenido.append(linea.trim()); // Agregar todo el contenido sin cabeceras
+    // Leer archivo desde el classpath
+    private static byte[] leerArchivo(String nombreArchivo) throws IOException {
+        try (InputStream is = UtilidadesCifrado.class.getResourceAsStream("/" + nombreArchivo);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            if (is == null) {
+                throw new FileNotFoundException("No se pudo encontrar el archivo: " + nombreArchivo);
             }
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = is.read(buffer)) != -1) {
+                baos.write(buffer, 0, bytesRead);
+            }
+            return baos.toByteArray();
         }
-
-        // Decodificar el contenido Base64
-        byte[] bytesClave = Base64.getDecoder().decode(contenido.toString());
-
-        // Crear una clave privada desde los bytes decodificados
-        PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(bytesClave);
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        return keyFactory.generatePrivate(spec);
     }
 
-    private byte[] fileReader(String path) {
-        byte ret[] = null;
-        File file = new File(path);
-        try {
-            ret = Files.readAllBytes(file.toPath());
-        } catch (Exception e) {
+    // Encriptar datos con clave pública
+    public static String encriptarConClavePublica(String datos, PublicKey clavePublica) throws Exception {
+        Cipher cipher = Cipher.getInstance("RSA");
+        cipher.init(Cipher.ENCRYPT_MODE, clavePublica);
+        byte[] datosEncriptados = cipher.doFinal(datos.getBytes());
+        return Base64.getEncoder().encodeToString(datosEncriptados);
+    }
 
-        }
-        return ret;
-    }*/
-    /**
-     * Desencripta datos cifrados con RSA usando la clave privada.
-     *
-     * @param datosCifrados array de bytes con el texto cifrado.
-     * @param clavePrivada clave privada RSA para descifrar.
-     * @return texto plano (String) descifrado.
-     * @throws Exception cualquier error de cifrado/descifrado.
-     */
-    public static String descifrarConRSA(byte[] datosCifrados, PrivateKey clavePrivada) throws Exception {
-        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+    // Desencriptar datos con clave privada
+    public static String desencriptarConClavePrivada(String datosEncriptados, PrivateKey clavePrivada) throws Exception {
+        Cipher cipher = Cipher.getInstance("RSA");
         cipher.init(Cipher.DECRYPT_MODE, clavePrivada);
-        byte[] datosDescifrados = cipher.doFinal(datosCifrados);
-        // Ajusta la codificación si prefieres otra (UTF-8 habitualmente)
-        return new String(datosDescifrados, java.nio.charset.StandardCharsets.UTF_8);
+        byte[] datosDecodificados = Base64.getDecoder().decode(datosEncriptados);
+        byte[] datosDesencriptados = cipher.doFinal(datosDecodificados);
+        return new String(datosDesencriptados);
+    }
+
+    // Hashear datos (contraseña)
+    public static String hashearContraseña(String contraseña) throws NoSuchAlgorithmException {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        byte[] hash = digest.digest(contraseña.getBytes());
+        StringBuilder sb = new StringBuilder();
+        for (byte b : hash) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
     }
 
 }

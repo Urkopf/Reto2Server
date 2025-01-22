@@ -12,6 +12,9 @@ import crud.excepciones.ReadException;
 import crud.excepciones.RemoveException;
 import crud.excepciones.UpdateException;
 import crud.seguridad.UtilidadesCifrado;
+import static crud.seguridad.UtilidadesCifrado.cargarClavePrivada;
+import static crud.seguridad.UtilidadesCifrado.desencriptarConClavePrivada;
+import static crud.seguridad.UtilidadesCifrado.hashearContraseña;
 import crud.servicios.UsuarioFacadeREST;
 import java.security.PrivateKey;
 import java.util.Base64;
@@ -420,39 +423,24 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
         LOGGER.log(Level.INFO, "Buscando usuario EJB: {0}", usuario.getCorreo());
 
         try {
+
+            // Cargar claves desde archivos
+            PrivateKey clavePrivada = cargarClavePrivada();
+
+            // Servidor desencripta la contraseña
+            String contraseñaDesencriptada = desencriptarConClavePrivada(usuario.getContrasena(), clavePrivada);
+
+            // Servidor hashea la contraseña antes de almacenarla
+            String contraseñaHasheada = hashearContraseña(contraseñaDesencriptada);
+
             // 1. Recuperar el usuario desde la base de datos por correo
-            Usuario usuarioBD = em.createNamedQuery("findUsuarioByCorreo", Usuario.class)
+            Usuario usuarioBD = em.createNamedQuery("inicioSesion", Usuario.class)
                     .setParameter("correo", usuario.getCorreo())
+                    .setParameter("contrasena", contraseñaHasheada)
                     .getSingleResult();
 
             if (usuarioBD == null) {
                 throw new ReadException("Usuario no encontrado.");
-            }
-
-            // 2. Extraer el salt y el hash desde la columna de contraseña
-            String[] saltYHash = usuarioBD.getContrasena().split(":");
-            if (saltYHash.length != 2) {
-                throw new ReadException("Formato de contraseña inválido en la base de datos.");
-            }
-            String saltBase64 = saltYHash[0];
-            String hashAlmacenado = saltYHash[1];
-            byte[] salt = Base64.getDecoder().decode(saltBase64);
-
-            // 3. Cargar la clave privada para descifrar la contraseña enviada
-            PrivateKey clavePrivada = UtilidadesCifrado.cargarClavePrivadaDesdePEM();
-
-            // 4. Decodificar la contraseña cifrada en Base64
-            byte[] contrasenaCifrada = Base64.getDecoder().decode(usuario.getContrasena());
-
-            // 5. Descifrar la contraseña con RSA usando la clave privada
-            String contrasenaPlana = UtilidadesCifrado.descifrarConRSA(contrasenaCifrada, clavePrivada);
-
-            // 6. Generar el hash de la contraseña descifrada con el salt
-            String hashGenerado = UtilidadesCifrado.hashearContrasena(contrasenaPlana, salt);
-
-            // 7. Comparar el hash generado con el hash almacenado
-            if (!hashGenerado.equals(hashAlmacenado)) {
-                throw new ReadException("Contraseña incorrecta.");
             }
 
             // 8. Buscar si el usuario es Cliente o Trabajador
@@ -479,64 +467,16 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
 
     @Override
     public Usuario cambioPass(Usuario usuario) throws ReadException {
-        try {
-            // Buscar el usuario en la base de datos
-            Usuario usuarioBD = em.find(Usuario.class, usuario.getId());
-            if (usuarioBD == null) {
-                throw new ReadException("Usuario no encontrado.");
-            }
 
-            // Desencriptar la nueva contraseña enviada por el cliente
-            PrivateKey clavePrivada = UtilidadesCifrado.cargarClavePrivadaDesdePEM();
-            String contrasenaDescifrada = UtilidadesCifrado.descifrarConRSA(usuario.getContrasena().getBytes(), clavePrivada);
+        return null; // Retorna el usuario actualizado
 
-            // Generar un nuevo hash y guardar en formato `salt:hash`
-            byte[] salt = UtilidadesCifrado.generarSalt();
-            String hashContrasena = UtilidadesCifrado.hashearContrasena(contrasenaDescifrada, salt);
-            usuarioBD.setContrasena(Base64.getEncoder().encodeToString(salt) + ":" + hashContrasena);
-
-            // Actualizar la contraseña en la base de datos
-            em.merge(usuarioBD);
-            LOGGER.log(Level.INFO, "Contraseña actualizada para el usuario con ID: {0}", usuario.getId());
-
-            return usuarioBD; // Retorna el usuario actualizado
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error al cambiar la contraseña", e);
-            throw new ReadException("Error al cambiar la contraseña: " + e.getMessage());
-        }
     }
 
     @Override
     public Usuario recuperarPass(Usuario usuario) throws ReadException {
-        try {
-            // Buscar el usuario por correo
-            Usuario usuarioBD = em.createNamedQuery("findUsuarioByCorreo", Usuario.class)
-                    .setParameter("correo", usuario.getCorreo())
-                    .getSingleResult();
 
-            if (usuarioBD == null) {
-                throw new ReadException("Usuario no encontrado.");
-            }
+        return null; // Retorna el usuario con la contraseña actualizada
 
-            // Generar una nueva contraseña temporal
-            String nuevaContrasenaTemporal = UtilidadesCifrado.generarContrasenaTemporal();
-            LOGGER.log(Level.INFO, "Nueva contraseña generada para el usuario con ID: {0}", usuarioBD.getId());
-
-            // Procesar la nueva contraseña
-            byte[] salt = UtilidadesCifrado.generarSalt();
-            String hashContrasena = UtilidadesCifrado.hashearContrasena(nuevaContrasenaTemporal, salt);
-            usuarioBD.setContrasena(Base64.getEncoder().encodeToString(salt) + ":" + hashContrasena);
-
-            // Actualizar en la base de datos
-            em.merge(usuarioBD);
-
-            // Simular el envío de la contraseña por correo (reemplazar con integración real)
-            //enviarCorreoRecuperacion(usuarioBD.getCorreo(), nuevaContrasenaTemporal);
-            return usuarioBD; // Retorna el usuario con la contraseña actualizada
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error al recuperar la contraseña", e);
-            throw new ReadException("Error al recuperar la contraseña: " + e.getMessage());
-        }
     }
 
     @Override
@@ -553,31 +493,15 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
 
     public void procesarContrasenaUsuario(Usuario usuario) throws Exception {
 
-        // Cargar la clave privada
-        PrivateKey clavePrivada = UtilidadesCifrado.cargarClavePrivadaDesdePEM();
+        // Cargar claves desde archivos
+        PrivateKey clavePrivada = cargarClavePrivada();
 
-        // Desencriptar la contraseña recibida en Base64
-        String contrasenaDescifrada = descifrarConRSA(usuario.getContrasena(), clavePrivada);
+        // Servidor desencripta la contraseña
+        String contraseñaDesencriptada = desencriptarConClavePrivada(usuario.getContrasena(), clavePrivada);
 
-        // Procesar la contraseña descifrada
-        System.out.println("Contraseña descifrada: " + contrasenaDescifrada);
-
-        // Continuar con la lógica de validación o hashing
-    }
-
-    public static String descifrarConRSA(String datosCifradosBase64, PrivateKey clavePrivada) throws Exception {
-        // Decodificar los datos cifrados desde Base64
-        byte[] datosCifrados = Base64.getDecoder().decode(datosCifradosBase64);
-
-        // Configurar el cifrador para descifrar con la clave privada
-        Cipher cifrador = Cipher.getInstance("RSA");
-        cifrador.init(Cipher.DECRYPT_MODE, clavePrivada);
-
-        // Descifrar los datos
-        byte[] datosDescifrados = cifrador.doFinal(datosCifrados);
-
-        // Convertir los datos descifrados a String
-        return new String(datosDescifrados, "UTF-8");
+        // Servidor hashea la contraseña antes de almacenarla
+        String contraseñaHasheada = hashearContraseña(contraseñaDesencriptada);
+        usuario.setContrasena(contraseñaHasheada);
     }
 
 }
