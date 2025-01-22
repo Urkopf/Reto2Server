@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package crud.ejb;
 
 import crud.entidades.Almacen;
@@ -16,10 +11,15 @@ import crud.excepciones.CreateException;
 import crud.excepciones.ReadException;
 import crud.excepciones.RemoveException;
 import crud.excepciones.UpdateException;
+import crud.seguridad.UtilidadesCifrado;
 import crud.servicios.UsuarioFacadeREST;
+import java.security.PrivateKey;
+import java.util.Base64;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -48,18 +48,26 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
     @Override
     public void createTrabajador(Trabajador trabajador) throws CreateException {
         try {
+            // Proceso de desencriptación y hashing de la contraseña
+            procesarContrasenaUsuario(trabajador);
+
+            // Persistir el trabajador con la contraseña hasheada
             em.persist(trabajador);
         } catch (Exception e) {
-            throw new CreateException(e.getMessage());
+            throw new CreateException("Error al crear el trabajador: " + e.getMessage());
         }
     }
 
     @Override
     public void createCliente(Cliente cliente) throws CreateException {
         try {
+            // Proceso de desencriptación y hashing de la contraseña
+            procesarContrasenaUsuario(cliente);
+
+            // Persistir el cliente con la contraseña hasheada
             em.persist(cliente);
         } catch (Exception e) {
-            throw new CreateException(e.getMessage());
+            throw new CreateException("Error al crear el cliente: " + e.getMessage());
         }
     }
 
@@ -409,38 +417,126 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
     public Object inicioSesion(Usuario usuario) throws ReadException {
         Object respuesta = null;
         Object respuesta2 = null;
-        LOGGER.log(Level.INFO, "Buscando usuario EJB: " + usuario.getCorreo());
+        LOGGER.log(Level.INFO, "Buscando usuario EJB: {0}", usuario.getCorreo());
+
         try {
-            //Hay que desencriptar la contraseña y demas......antes de usar esto
-            respuesta = em.createNamedQuery("inicioSesion")
+            // 1. Recuperar el usuario desde la base de datos por correo
+            Usuario usuarioBD = em.createNamedQuery("findUsuarioByCorreo", Usuario.class)
                     .setParameter("correo", usuario.getCorreo())
-                    .setParameter("contrasena", usuario.getContrasena())
                     .getSingleResult();
-        } catch (Exception e) {
-            throw new ReadException(e.getMessage());
-        }
 
-        if (respuesta != null) {
-            LOGGER.log(Level.INFO, "Buscando si es cliente: " + ((Usuario) respuesta).getId());
+            if (usuarioBD == null) {
+                throw new ReadException("Usuario no encontrado.");
+            }
+
+            // 2. Extraer el salt y el hash desde la columna de contraseña
+            String[] saltYHash = usuarioBD.getContrasena().split(":");
+            if (saltYHash.length != 2) {
+                throw new ReadException("Formato de contraseña inválido en la base de datos.");
+            }
+            String saltBase64 = saltYHash[0];
+            String hashAlmacenado = saltYHash[1];
+            byte[] salt = Base64.getDecoder().decode(saltBase64);
+
+            // 3. Cargar la clave privada para descifrar la contraseña enviada
+            PrivateKey clavePrivada = UtilidadesCifrado.cargarClavePrivadaDesdePEM();
+
+            // 4. Decodificar la contraseña cifrada en Base64
+            byte[] contrasenaCifrada = Base64.getDecoder().decode(usuario.getContrasena());
+
+            // 5. Descifrar la contraseña con RSA usando la clave privada
+            String contrasenaPlana = UtilidadesCifrado.descifrarConRSA(contrasenaCifrada, clavePrivada);
+
+            // 6. Generar el hash de la contraseña descifrada con el salt
+            String hashGenerado = UtilidadesCifrado.hashearContrasena(contrasenaPlana, salt);
+
+            // 7. Comparar el hash generado con el hash almacenado
+            if (!hashGenerado.equals(hashAlmacenado)) {
+                throw new ReadException("Contraseña incorrecta.");
+            }
+
+            // 8. Buscar si el usuario es Cliente o Trabajador
+            LOGGER.log(Level.INFO, "Buscando si es cliente: {0}", usuarioBD.getId());
             respuesta2 = em.createNamedQuery("esCliente")
-                    .setParameter("id", ((Usuario) respuesta).getId())
+                    .setParameter("id", usuarioBD.getId())
                     .getSingleResult();
 
-            if (respuesta == null) {
+            if (respuesta2 == null) {
                 respuesta2 = em.createNamedQuery("esTrabajador")
-                        .setParameter("id", ((Usuario) respuesta).getId())
+                        .setParameter("id", usuarioBD.getId())
                         .getSingleResult();
             }
 
             respuesta = respuesta2;
+
+        } catch (Exception e) {
+            throw new ReadException("Error en el inicio de sesión: " + e.getMessage());
         }
-        LOGGER.log(Level.INFO, "Respuesta: " + respuesta.toString());
+
+        LOGGER.log(Level.INFO, "Respuesta: {0}", respuesta != null ? respuesta.toString() : "Ninguna");
         return respuesta;
     }
 
     @Override
     public Usuario cambioPass(Usuario usuario) throws ReadException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            // Buscar el usuario en la base de datos
+            Usuario usuarioBD = em.find(Usuario.class, usuario.getId());
+            if (usuarioBD == null) {
+                throw new ReadException("Usuario no encontrado.");
+            }
+
+            // Desencriptar la nueva contraseña enviada por el cliente
+            PrivateKey clavePrivada = UtilidadesCifrado.cargarClavePrivadaDesdePEM();
+            String contrasenaDescifrada = UtilidadesCifrado.descifrarConRSA(usuario.getContrasena().getBytes(), clavePrivada);
+
+            // Generar un nuevo hash y guardar en formato `salt:hash`
+            byte[] salt = UtilidadesCifrado.generarSalt();
+            String hashContrasena = UtilidadesCifrado.hashearContrasena(contrasenaDescifrada, salt);
+            usuarioBD.setContrasena(Base64.getEncoder().encodeToString(salt) + ":" + hashContrasena);
+
+            // Actualizar la contraseña en la base de datos
+            em.merge(usuarioBD);
+            LOGGER.log(Level.INFO, "Contraseña actualizada para el usuario con ID: {0}", usuario.getId());
+
+            return usuarioBD; // Retorna el usuario actualizado
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error al cambiar la contraseña", e);
+            throw new ReadException("Error al cambiar la contraseña: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public Usuario recuperarPass(Usuario usuario) throws ReadException {
+        try {
+            // Buscar el usuario por correo
+            Usuario usuarioBD = em.createNamedQuery("findUsuarioByCorreo", Usuario.class)
+                    .setParameter("correo", usuario.getCorreo())
+                    .getSingleResult();
+
+            if (usuarioBD == null) {
+                throw new ReadException("Usuario no encontrado.");
+            }
+
+            // Generar una nueva contraseña temporal
+            String nuevaContrasenaTemporal = UtilidadesCifrado.generarContrasenaTemporal();
+            LOGGER.log(Level.INFO, "Nueva contraseña generada para el usuario con ID: {0}", usuarioBD.getId());
+
+            // Procesar la nueva contraseña
+            byte[] salt = UtilidadesCifrado.generarSalt();
+            String hashContrasena = UtilidadesCifrado.hashearContrasena(nuevaContrasenaTemporal, salt);
+            usuarioBD.setContrasena(Base64.getEncoder().encodeToString(salt) + ":" + hashContrasena);
+
+            // Actualizar en la base de datos
+            em.merge(usuarioBD);
+
+            // Simular el envío de la contraseña por correo (reemplazar con integración real)
+            //enviarCorreoRecuperacion(usuarioBD.getCorreo(), nuevaContrasenaTemporal);
+            return usuarioBD; // Retorna el usuario con la contraseña actualizada
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error al recuperar la contraseña", e);
+            throw new ReadException("Error al recuperar la contraseña: " + e.getMessage());
+        }
     }
 
     @Override
@@ -455,9 +551,33 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
         return Boolean.TRUE;
     }
 
-    @Override
-    public Usuario recuperarPass(Usuario usuario) throws ReadException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void procesarContrasenaUsuario(Usuario usuario) throws Exception {
+
+        // Cargar la clave privada
+        PrivateKey clavePrivada = UtilidadesCifrado.cargarClavePrivadaDesdePEM();
+
+        // Desencriptar la contraseña recibida en Base64
+        String contrasenaDescifrada = descifrarConRSA(usuario.getContrasena(), clavePrivada);
+
+        // Procesar la contraseña descifrada
+        System.out.println("Contraseña descifrada: " + contrasenaDescifrada);
+
+        // Continuar con la lógica de validación o hashing
+    }
+
+    public static String descifrarConRSA(String datosCifradosBase64, PrivateKey clavePrivada) throws Exception {
+        // Decodificar los datos cifrados desde Base64
+        byte[] datosCifrados = Base64.getDecoder().decode(datosCifradosBase64);
+
+        // Configurar el cifrador para descifrar con la clave privada
+        Cipher cifrador = Cipher.getInstance("RSA");
+        cifrador.init(Cipher.DECRYPT_MODE, clavePrivada);
+
+        // Descifrar los datos
+        byte[] datosDescifrados = cifrador.doFinal(datosCifrados);
+
+        // Convertir los datos descifrados a String
+        return new String(datosDescifrados, "UTF-8");
     }
 
 }

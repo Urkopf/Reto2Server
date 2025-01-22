@@ -1,4 +1,4 @@
-package crud.encriptacion;
+package crud.enviocorreo;
 
 import java.io.File;
 import java.util.Properties;
