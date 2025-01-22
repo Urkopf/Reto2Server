@@ -7,16 +7,22 @@ import crud.entidades.Pedido;
 import crud.entidades.PedidoArticulo;
 import crud.entidades.Trabajador;
 import crud.entidades.Usuario;
+import crud.enviocorreo.EnvioCorreos;
+import static crud.enviocorreo.EnvioCorreos.enviar;
 import crud.excepciones.CreateException;
 import crud.excepciones.ReadException;
 import crud.excepciones.RemoveException;
 import crud.excepciones.UpdateException;
 import crud.seguridad.UtilidadesCifrado;
 import static crud.seguridad.UtilidadesCifrado.cargarClavePrivada;
+import static crud.seguridad.UtilidadesCifrado.cargarClavePublica;
 import static crud.seguridad.UtilidadesCifrado.desencriptarConClavePrivada;
+import static crud.seguridad.UtilidadesCifrado.encriptarConClavePublica;
+import static crud.seguridad.UtilidadesCifrado.generarContrasenaTemporal;
 import static crud.seguridad.UtilidadesCifrado.hashearContraseña;
 import crud.servicios.UsuarioFacadeREST;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.Base64;
 import java.util.List;
 import java.util.logging.Level;
@@ -468,12 +474,74 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
     @Override
     public Usuario cambioPass(Usuario usuario) throws ReadException {
 
-        return null; // Retorna el usuario actualizado
+        try {
+            PrivateKey clavePrivada = null;
+            clavePrivada = cargarClavePrivada();
+            // Servidor desencripta la contraseña
+            String contraseñaDesencriptadaVieja = desencriptarConClavePrivada(usuario.getContrasena(), clavePrivada);
 
+            // Servidor hashea la contraseña antes de almacenarla
+            String contraseñaHasheadaVieja = hashearContraseña(contraseñaDesencriptadaVieja);
+            Usuario usuarioBD = em.createNamedQuery("iniciosesion", Usuario.class)
+                    .setParameter("correo", usuario.getCorreo())
+                    .setParameter("contrasena", contraseñaHasheadaVieja)
+                    .getSingleResult();
+            if (usuarioBD != null) {
+
+                // Servidor desencripta la contraseña
+                String contraseñaDesencriptadaNueva = desencriptarConClavePrivada(usuario.getCalle(), clavePrivada);
+
+                // Servidor hashea la contraseña antes de almacenarla
+                String contraseñaHasheadaNuevo = hashearContraseña(contraseñaDesencriptadaNueva);
+                usuarioBD.setContrasena(contraseñaHasheadaNuevo);
+                updateUsuario(usuarioBD);
+                //contraseñaHasheada <-- asignarla al usuario para editarla
+
+            } else {
+                enviar("cambio", usuario.getCorreo(), "");
+            }
+
+            return usuario;
+        } catch (Exception ex) {
+            Logger.getLogger(EJBGestorEntidades.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
     @Override
     public Usuario recuperarPass(Usuario usuario) throws ReadException {
+
+        if (existeCorreo(usuario)) {
+            String nueva = generarContrasenaTemporal();
+            Usuario usuarioBD = em.createNamedQuery("recuperar", Usuario.class)
+                    .setParameter("correo", usuario.getCorreo())
+                    .getSingleResult();
+            //Buscar usuario, y asignar nueva contraseña
+            // Cargar claves desde archivos
+            PublicKey clavePublica = null;
+            PrivateKey clavePrivada = null;
+            try {
+                clavePublica = cargarClavePublica();
+                clavePrivada = cargarClavePrivada();
+                // Cliente encripta la contraseña
+                String contraseñaEncriptada = encriptarConClavePublica(nueva, clavePublica);
+
+                // Servidor desencripta la contraseña
+                String contraseñaDesencriptada = desencriptarConClavePrivada(contraseñaEncriptada, clavePrivada);
+
+                // Servidor hashea la contraseña antes de almacenarla
+                String contraseñaHasheada = hashearContraseña(contraseñaDesencriptada);
+                usuarioBD.setContrasena(contraseñaHasheada);
+                updateUsuario(usuarioBD);
+                //contraseñaHasheada <-- asignarla al usuario para editarla
+            } catch (Exception ex) {
+                Logger.getLogger(EJBGestorEntidades.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            enviar("recupera", usuario.getCorreo(), nueva);
+
+            return usuario;
+        }
 
         return null; // Retorna el usuario con la contraseña actualizada
 

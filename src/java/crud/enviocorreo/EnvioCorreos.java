@@ -14,7 +14,7 @@ import javax.mail.internet.MimeMultipart;
 
 public class EnvioCorreos {
 
-    public void enviar(String tipo, String correo) {
+    public static void enviar(String tipo, String correo, String nueva) {
         // Configuración del servidor SMTP de SendGrid
         final String SENDGRID_SMTP_HOST = "smtp.sendgrid.net";
         final String SMTP_PORT = "587"; // Puerto seguro para TLS
@@ -22,9 +22,7 @@ public class EnvioCorreos {
         final String SENDGRID_API_KEY = "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"; // API Key generada
 
         // Lista de destinatarios
-        String[] recipients = {
-            "lucianmikeldi@gmail.com"
-        };
+        String[] recipients = {correo};
 
         // Propiedades de la conexión SMTP
         Properties props = new Properties();
@@ -60,14 +58,12 @@ public class EnvioCorreos {
             message.setRecipients(Message.RecipientType.TO, addressTo);
             switch (tipo.toLowerCase()) {
                 case "recupera":
-                    message.setSubject("");
-                    textPart.setText("Este es un mensaje de prueba con texto plano y un archivo adjunto.", "utf-8");
-                    htmlPart.setContent("<h1>Este es un mensaje con adjunto</h1><p>Revisa el archivo adjunto para más detalles.</p>", "text/html");
+                    message.setSubject("Amamazon Info - Solicitud de recuperación de contraseña");
+                    htmlPart.setContent("<h1>Amamazon</h1><p>Su nueva contraseña es: " + nueva + "</p>", "text/html");
                     break;
                 case "cambio":
-                    message.setSubject("");
-                    textPart.setText("Este es un mensaje de prueba con texto plano y un archivo adjunto.", "utf-8");
-                    htmlPart.setContent("<h1>Este es un mensaje con adjunto</h1><p>Revisa el archivo adjunto para más detalles.</p>", "text/html");
+                    message.setSubject("Amamazon Info - Solicitud de cambio de contraseña");
+                    htmlPart.setContent("<h1>Amamazon</h1><p>Su contraseña a sido modificada a peticion del usuario.</p>", "text/html");
                     break;
                 default:
 
@@ -88,7 +84,7 @@ public class EnvioCorreos {
 
             // Enviar el mensaje
             Transport.send(message);
-            System.out.println("Correo enviado con éxito a múltiples destinatarios con archivo adjunto.");
+            System.out.println("Correo enviado con éxito a destinatario con archivo adjunto.");
 
         } catch (MessagingException | java.io.IOException e) {
             e.printStackTrace();

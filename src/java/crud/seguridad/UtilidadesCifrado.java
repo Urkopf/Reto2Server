@@ -98,4 +98,35 @@ public class UtilidadesCifrado {
         return sb.toString();
     }
 
+    // Generar una contraseña temporal
+    public static String generarContrasenaTemporal() {
+        SecureRandom random = new SecureRandom();
+        int longitud = 10;
+        String mayusculas = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String minusculas = "abcdefghijklmnopqrstuvwxyz";
+        String numeros = "0123456789";
+        String caracteres = mayusculas + minusculas + numeros;
+
+        // Asegurar que la contraseña tiene al menos una mayúscula, un número y cumple con la longitud
+        StringBuilder contrasena = new StringBuilder(longitud);
+
+        // Añadir al menos una mayúscula, un número y completar con caracteres aleatorios
+        contrasena.append(mayusculas.charAt(random.nextInt(mayusculas.length())));
+        contrasena.append(numeros.charAt(random.nextInt(numeros.length())));
+        for (int i = 2; i < longitud; i++) {
+            contrasena.append(caracteres.charAt(random.nextInt(caracteres.length())));
+        }
+
+        // Mezclar los caracteres para evitar patrones previsibles
+        char[] contrasenaArray = contrasena.toString().toCharArray();
+        for (int i = 0; i < contrasenaArray.length; i++) {
+            int randomIndex = random.nextInt(contrasenaArray.length);
+            char temp = contrasenaArray[i];
+            contrasenaArray[i] = contrasenaArray[randomIndex];
+            contrasenaArray[randomIndex] = temp;
+        }
+
+        return new String(contrasenaArray);
+    }
+
 }
