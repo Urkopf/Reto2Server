@@ -33,6 +33,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     ,
     @NamedQuery(name = "recuperar", query = "SELECT a FROM Usuario a WHERE a.correo = :correo")
     ,
+    @NamedQuery(name = "existeCorreo", query = "SELECT COUNT(a) FROM Usuario a WHERE a.correo = :correo")
+    ,
     @NamedQuery(name = "esCliente", query = "SELECT a FROM Cliente a WHERE a.id = :id")
     ,
     @NamedQuery(name = "esTrabajador", query = "SELECT a FROM Trabajador a WHERE a.id = :id")

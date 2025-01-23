@@ -132,11 +132,11 @@ public class UsuarioFacadeREST {
     @Path("/cambiar")
     @Consumes(MediaType.APPLICATION_XML)
     @Produces(MediaType.APPLICATION_XML)
-    public Object cambiar(Usuario usuario) {
-        Object resultado = null;
+    public void cambiar(Usuario usuario) {
+
         try {
             LOGGER.log(Level.INFO, "Cambiando contrasena");
-            resultado = ejb.cambioPass(usuario);
+            ejb.cambioPass(usuario);
         } catch (ReadException ex) {
             LOGGER.severe(ex.getMessage());
             throw new InternalServerErrorException(ex.getMessage());
@@ -144,18 +144,18 @@ public class UsuarioFacadeREST {
             LOGGER.log(Level.SEVERE, "Error inesperado: {0}", ex.getMessage());
             throw new InternalServerErrorException("Error interno del servidor.");
         }
-        return resultado;
+
     }
 
     @POST
     @Path("/recuperar")
     @Consumes(MediaType.APPLICATION_XML)
     @Produces(MediaType.APPLICATION_XML)
-    public Object recuperar(Usuario usuario) {
-        Object resultado = null;
+    public void recuperar(Usuario usuario) {
+
         try {
             LOGGER.log(Level.INFO, "Recuperando contrasena de usuario: " + usuario.getCorreo());
-            resultado = ejb.recuperarPass(usuario);
+            ejb.recuperarPass(usuario);
         } catch (ReadException ex) {
             LOGGER.severe(ex.getMessage());
             throw new InternalServerErrorException(ex.getMessage());
@@ -163,7 +163,7 @@ public class UsuarioFacadeREST {
             LOGGER.log(Level.SEVERE, "Error inesperado: {0}", ex.getMessage());
             throw new InternalServerErrorException("Error interno del servidor.");
         }
-        return resultado;
+
     }
 
     @GET

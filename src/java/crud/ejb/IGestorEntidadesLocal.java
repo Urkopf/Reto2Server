@@ -109,9 +109,9 @@ public interface IGestorEntidadesLocal {
     //AÑADIR PERSONALIZADAS
     public Object inicioSesion(Usuario usuario) throws ReadException;
 
-    public Usuario cambioPass(Usuario usuario) throws ReadException;
+    public void cambioPass(Usuario usuario) throws ReadException;
 
     public Boolean existeCorreo(Usuario usuario) throws ReadException;
 
-    public Usuario recuperarPass(Usuario usuario) throws ReadException;
+    public void recuperarPass(Usuario usuario) throws ReadException;
 }

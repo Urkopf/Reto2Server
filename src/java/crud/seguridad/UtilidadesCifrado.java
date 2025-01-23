@@ -13,11 +13,53 @@ import java.io.InputStream;
 
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 public class UtilidadesCifrado {
 
     private static final String RUTA_CLAVE_PUBLICA = "crud/seguridad/clave_publica.key";
     private static final String RUTA_CLAVE_PRIVADA = "crud/seguridad/clave_privada.key";
+    private static final String RUTA_CLAVE_SIMETRICA = "crud/seguridad/clave_simetrica.key";
+
+    // Generar y guardar clave simétrica (AES)
+    public static void generarYGuardarClaveSimetrica() throws Exception {
+        KeyGenerator generador = KeyGenerator.getInstance("AES");
+        generador.init(256); // Usa 128, 192 o 256 bits según sea compatible con tu entorno
+        SecretKey claveSimetrica = generador.generateKey();
+        guardarClaveSimetrica(claveSimetrica, RUTA_CLAVE_SIMETRICA);
+    }
+
+    // Guardar clave simétrica en archivo
+    private static void guardarClaveSimetrica(SecretKey clave, String ruta) throws IOException {
+        try (FileOutputStream fos = new FileOutputStream(ruta)) {
+            fos.write(clave.getEncoded());
+        }
+    }
+
+    // Cargar clave simétrica desde archivo
+    public static SecretKey cargarClaveSimetrica() throws Exception {
+        byte[] claveBytes = leerArchivo(RUTA_CLAVE_SIMETRICA);
+        return new SecretKeySpec(claveBytes, "AES");
+    }
+
+    // Cifrar datos con clave simétrica (AES)
+    public static String cifrarConClaveSimetrica(String datos, SecretKey claveSimetrica) throws Exception {
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.ENCRYPT_MODE, claveSimetrica);
+        byte[] datosCifrados = cipher.doFinal(datos.getBytes("UTF-8"));
+        return Base64.getEncoder().encodeToString(datosCifrados);
+    }
+
+    // Descifrar datos con clave simétrica (AES)
+    public static String descifrarConClaveSimetrica(String datosCifrados, SecretKey claveSimetrica) throws Exception {
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.DECRYPT_MODE, claveSimetrica);
+        byte[] datosDecodificados = Base64.getDecoder().decode(datosCifrados);
+        byte[] datosDescifrados = cipher.doFinal(datosDecodificados);
+        return new String(datosDescifrados, "UTF-8");
+    }
 
     // Generar y guardar claves en archivos
     public static void generarYGuardarClaves() throws Exception {
@@ -85,6 +127,35 @@ public class UtilidadesCifrado {
         byte[] datosDecodificados = Base64.getDecoder().decode(datosEncriptados);
         byte[] datosDesencriptados = cipher.doFinal(datosDecodificados);
         return new String(datosDesencriptados);
+    }
+
+    /**
+     * Encripta datos usando la clave privada (RSA).
+     *
+     * @param datos Texto en claro a encriptar.
+     * @param clavePrivada Clave privada RSA.
+     * @return El texto encriptado, codificado en Base64.
+     */
+    public static String encriptarConClavePrivada(String datos, PrivateKey clavePrivada) throws Exception {
+        Cipher cipher = Cipher.getInstance("RSA");
+        cipher.init(Cipher.ENCRYPT_MODE, clavePrivada);
+        byte[] datosEncriptados = cipher.doFinal(datos.getBytes("UTF-8"));
+        return Base64.getEncoder().encodeToString(datosEncriptados);
+    }
+
+    /**
+     * Desencripta datos usando la clave pública (RSA).
+     *
+     * @param datosEncriptados Texto encriptado (en Base64).
+     * @param clavePublica Clave pública RSA.
+     * @return El texto original desencriptado.
+     */
+    public static String desencriptarConClavePublica(String datosEncriptados, PublicKey clavePublica) throws Exception {
+        Cipher cipher = Cipher.getInstance("RSA");
+        cipher.init(Cipher.DECRYPT_MODE, clavePublica);
+        byte[] datosDecodificados = Base64.getDecoder().decode(datosEncriptados);
+        byte[] datosDesencriptados = cipher.doFinal(datosDecodificados);
+        return new String(datosDesencriptados, "UTF-8");
     }
 
     // Hashear datos (contraseña)

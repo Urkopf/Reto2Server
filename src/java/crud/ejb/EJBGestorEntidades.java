@@ -472,7 +472,7 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
     }
 
     @Override
-    public Usuario cambioPass(Usuario usuario) throws ReadException {
+    public void cambioPass(Usuario usuario) throws ReadException {
 
         try {
             PrivateKey clavePrivada = null;
@@ -501,19 +501,18 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
                 enviar("cambio", usuario.getCorreo(), "");
             }
 
-            return usuario;
         } catch (Exception ex) {
             Logger.getLogger(EJBGestorEntidades.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return null;
+
     }
 
     @Override
-    public Usuario recuperarPass(Usuario usuario) throws ReadException {
-
+    public void recuperarPass(Usuario usuario) throws ReadException {
+        Usuario usuarioBD = null;
         if (existeCorreo(usuario)) {
             String nueva = generarContrasenaTemporal();
-            Usuario usuarioBD = em.createNamedQuery("recuperar", Usuario.class)
+            usuarioBD = em.createNamedQuery("recuperar", Usuario.class)
                     .setParameter("correo", usuario.getCorreo())
                     .getSingleResult();
             //Buscar usuario, y asignar nueva contraseña
@@ -532,27 +531,29 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
                 // Servidor hashea la contraseña antes de almacenarla
                 String contraseñaHasheada = hashearContraseña(contraseñaDesencriptada);
                 usuarioBD.setContrasena(contraseñaHasheada);
-                updateUsuario(usuarioBD);
+
                 //contraseñaHasheada <-- asignarla al usuario para editarla
             } catch (Exception ex) {
                 Logger.getLogger(EJBGestorEntidades.class.getName()).log(Level.SEVERE, null, ex);
             }
 
             enviar("recupera", usuario.getCorreo(), nueva);
-
-            return usuario;
+            try {
+                updateUsuario(usuarioBD);
+            } catch (UpdateException ex) {
+                Logger.getLogger(EJBGestorEntidades.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
-
-        return null; // Retorna el usuario con la contraseña actualizada
-
     }
 
     @Override
     public Boolean existeCorreo(Usuario usuario) throws ReadException {
         try {
-            if ((Integer) em.createNamedQuery("existeCorreo").setParameter("correo", usuario.getCorreo()).getSingleResult() == 0) {
+            LOGGER.log(Level.INFO, "Verificando correo");
+            if (((Long) em.createNamedQuery("existeCorreo").setParameter("correo", usuario.getCorreo()).getSingleResult()).intValue() == 0) {
                 throw new ReadException();
             }
+            LOGGER.log(Level.INFO, "Verificado correo OK");
         } catch (Exception e) {
             throw new ReadException(e.getMessage());
         }
