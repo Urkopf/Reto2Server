@@ -482,7 +482,7 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
 
             // Servidor hashea la contraseña antes de almacenarla
             String contraseñaHasheadaVieja = hashearContraseña(contraseñaDesencriptadaVieja);
-            Usuario usuarioBD = em.createNamedQuery("iniciosesion", Usuario.class)
+            Usuario usuarioBD = em.createNamedQuery("inicioSesion", Usuario.class)
                     .setParameter("correo", usuario.getCorreo())
                     .setParameter("contrasena", contraseñaHasheadaVieja)
                     .getSingleResult();
@@ -495,9 +495,7 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
                 String contraseñaHasheadaNuevo = hashearContraseña(contraseñaDesencriptadaNueva);
                 usuarioBD.setContrasena(contraseñaHasheadaNuevo);
                 updateUsuario(usuarioBD);
-                //contraseñaHasheada <-- asignarla al usuario para editarla
 
-            } else {
                 enviar("cambio", usuario.getCorreo(), "");
             }
 
