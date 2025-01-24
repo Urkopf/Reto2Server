@@ -87,7 +87,7 @@ public class EnvioCorreos {
 
                 MimeBodyPart imagePart2 = new MimeBodyPart();
 
-                imagePart2.setDataHandler(cargarImagenDesdeClasspath("crud/enviocorreo/fondo_lite_completo.png"));
+                imagePart2.setDataHandler(cargarImagenDesdeClasspath("crud/enviocorreo/logoFullrecortado.PNG"));
                 imagePart2.setHeader("Content-ID", "<logo>");
                 imagePart2.setDisposition(MimeBodyPart.INLINE);
 
