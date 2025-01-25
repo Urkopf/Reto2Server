@@ -114,4 +114,6 @@ public interface IGestorEntidadesLocal {
     public Boolean existeCorreo(Usuario usuario) throws ReadException;
 
     public void recuperarPass(Usuario usuario) throws ReadException;
+
+    public List<Almacen> findAllArticuloById(Long id) throws ReadException;
 }

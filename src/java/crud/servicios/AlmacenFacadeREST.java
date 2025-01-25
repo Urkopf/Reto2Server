@@ -119,6 +119,22 @@ public class AlmacenFacadeREST {
     }
 
     @GET
+    @Path("articulo/{id}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public List<Almacen> findAllById(@PathParam("id") Long id) {
+        try {
+            LOGGER.log(Level.INFO, "Buscando todos los almacenes con id: {0}", id);
+            return ejb.findAllArticuloById(id);
+        } catch (ReadException ex) {
+            LOGGER.severe(ex.getMessage());
+            throw new InternalServerErrorException(ex.getMessage());
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Error inesperado: {0}", ex.getMessage());
+            throw new InternalServerErrorException("Error interno del servidor.");
+        }
+    }
+
+    @GET
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Almacen> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {

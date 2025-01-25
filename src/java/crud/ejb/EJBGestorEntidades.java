@@ -7,28 +7,22 @@ import crud.entidades.Pedido;
 import crud.entidades.PedidoArticulo;
 import crud.entidades.Trabajador;
 import crud.entidades.Usuario;
-import crud.enviocorreo.EnvioCorreos;
 import static crud.enviocorreo.EnvioCorreos.enviar;
 import crud.excepciones.CreateException;
 import crud.excepciones.ReadException;
 import crud.excepciones.RemoveException;
 import crud.excepciones.UpdateException;
-import crud.seguridad.UtilidadesCifrado;
 import static crud.seguridad.UtilidadesCifrado.cargarClavePrivada;
 import static crud.seguridad.UtilidadesCifrado.cargarClavePublica;
 import static crud.seguridad.UtilidadesCifrado.desencriptarConClavePrivada;
 import static crud.seguridad.UtilidadesCifrado.encriptarConClavePublica;
 import static crud.seguridad.UtilidadesCifrado.generarContrasenaTemporal;
 import static crud.seguridad.UtilidadesCifrado.hashearContraseña;
-import crud.servicios.UsuarioFacadeREST;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.util.Base64;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -415,7 +409,9 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
     public List<Almacen> findAllAlmacen() throws ReadException {
         List<Almacen> almacen;
         try {
+            LOGGER.log(Level.INFO, "Buscando almacenes .....");
             almacen = em.createNamedQuery("findAllAlmacen").getResultList();
+            LOGGER.log(Level.INFO, "Todos los almacenes encontrados");
         } catch (Exception e) {
             throw new ReadException(e.getMessage());
         }
@@ -569,6 +565,22 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
         // Servidor hashea la contraseña antes de almacenarla
         String contraseñaHasheada = hashearContraseña(contraseñaDesencriptada);
         usuario.setContrasena(contraseñaHasheada);
+    }
+
+    @Override
+    public List<Almacen> findAllArticuloById(Long id) throws ReadException {
+        List<Almacen> almacenes;
+        try {
+            LOGGER.log(Level.INFO, "Buscando almacenes para el articulo....");
+            almacenes = em.createNamedQuery("findAlmacenesByArticuloId", Almacen.class)
+                    .setParameter("articulo_id", id)
+                    .getResultList();
+            LOGGER.log(Level.INFO, "Almacenes encontrados");
+
+        } catch (Exception e) {
+            throw new ReadException(e.getMessage());
+        }
+        return almacenes;
     }
 
 }
