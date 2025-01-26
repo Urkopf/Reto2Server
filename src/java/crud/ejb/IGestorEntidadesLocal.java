@@ -119,4 +119,6 @@ public interface IGestorEntidadesLocal {
     public List<Almacen> findAllArticuloById(Long id) throws ReadException;
 
     public void updateAlmacenWithArticulo(Almacen almacen) throws UpdateException, CreateException, ReadException, RelationAlreadyExistsException;
+
+    public void removeAlmacenWithArticulo(Almacen almacen) throws RemoveException, ReadException;
 }

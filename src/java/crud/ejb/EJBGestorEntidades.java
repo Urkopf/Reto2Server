@@ -21,7 +21,9 @@ import static crud.seguridad.UtilidadesCifrado.generarContrasenaTemporal;
 import static crud.seguridad.UtilidadesCifrado.hashearContraseña;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
@@ -174,6 +176,8 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
     @Override
     public void updateArticulo(Articulo articulo) throws UpdateException {
         try {
+            Articulo articuloExistente = em.find(Articulo.class, articulo.getId());
+            articulo.setAlmacen(articuloExistente.getAlmacenes());
             if (!em.contains(articulo)) {
                 em.merge(articulo);
             }
@@ -570,18 +574,22 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
 
     @Override
     public List<Almacen> findAllArticuloById(Long id) throws ReadException {
-        List<Almacen> almacenes;
+        List<Almacen> listaAlmacenes;
         try {
-            LOGGER.log(Level.INFO, "Buscando almacenes para el articulo....");
-            almacenes = em.createNamedQuery("findAlmacenesByArticuloId", Almacen.class)
-                    .setParameter("articulo_id", id)
-                    .getResultList();
-            LOGGER.log(Level.INFO, "Almacenes encontrados");
+//            LOGGER.log(Level.INFO, "Buscando almacenes para el articulo....");
+//            almacenes = em.createNamedQuery("findAlmacenesByArticuloId", Almacen.class)
+//                    .setParameter("articulo_id", id)
+//                    .getResultList();
+//            LOGGER.log(Level.INFO, "Almacenes encontrados");
+
+            Articulo articuloExistente = em.find(Articulo.class, id);
+            Set<Almacen> setAlmacenes = articuloExistente.getAlmacenes(); // Obtienes un Set
+            listaAlmacenes = new ArrayList<>(setAlmacenes); // Convierte el Set a List
 
         } catch (Exception e) {
             throw new ReadException(e.getMessage());
         }
-        return almacenes;
+        return listaAlmacenes;
     }
 
     @Override
@@ -596,6 +604,8 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
                     .getSingleResult()).longValue();
 
             if (count == 0) {
+                almacen.setEspacio(almacen.getEspacio() - 1);
+                updateAlmacen(almacen);
                 // Inserta la relación si no existe
                 LOGGER.info("Relación no encontrada. Insertando nueva relación.");
                 em.createNativeQuery(
@@ -620,6 +630,33 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
         } catch (Exception e) {
             LOGGER.severe("Error inesperado: " + e.getMessage());
             throw new UpdateException("Error inesperado al manejar la relación artículo-almacén.");
+        }
+    }
+
+    @Override
+    public void removeAlmacenWithArticulo(Almacen almacen) throws RemoveException, ReadException {
+        try {
+            Long count = ((Number) em.createNativeQuery(
+                    "SELECT COUNT(*) FROM reto2.articulo_almacen "
+                    + "WHERE articulos_articulo_id = ? AND almacenes_almacen_id = ?")
+                    .setParameter(1, almacen.getArticuloId())
+                    .setParameter(2, almacen.getId())
+                    .getSingleResult()).longValue();
+
+            if (count > 0) {
+                almacen.setEspacio(almacen.getEspacio() + 1);
+                removeAlmacen(almacen);
+                LOGGER.info("Borrar la relacion.");
+                em.createNativeQuery(
+                        "DELETE FROM reto2.articulo_almacen WHERE articulos_articulo_id = ? AND almacenes_almacen_id = ?")
+                        .setParameter(1, almacen.getArticuloId())
+                        .setParameter(2, almacen.getId())
+                        .executeUpdate();
+            }
+
+        } catch (Exception e) {
+            LOGGER.severe("Error inesperado: " + e.getMessage());
+            throw new RemoveException("Error inesperado al manejar la relación artículo-almacén.");
         }
     }
 

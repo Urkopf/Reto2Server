@@ -76,7 +76,7 @@ public class AlmacenFacadeREST {
     }
 
     @POST
-    @Path("/relacion")
+    @Path("relacion")
     public Response asociarOActualizarArticuloAlmacen(Almacen entity) {
         try {
             LOGGER.info("Iniciando la asociación o actualización del artículo con el almacén.");
@@ -148,6 +148,22 @@ public class AlmacenFacadeREST {
             LOGGER.log(Level.INFO, "Buscando todos los almacenes con id: {0}", id);
             return ejb.findAllArticuloById(id);
         } catch (ReadException ex) {
+            LOGGER.severe(ex.getMessage());
+            throw new InternalServerErrorException(ex.getMessage());
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Error inesperado: {0}", ex.getMessage());
+            throw new InternalServerErrorException("Error interno del servidor.");
+        }
+    }
+
+    @POST
+    @Path("borrar")
+    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public void removeRelacion(Almacen almacen) {
+        try {
+            LOGGER.log(Level.INFO, "Borrando almacen {0}", almacen.getId());
+            ejb.removeAlmacenWithArticulo(almacen);
+        } catch (ReadException | RemoveException ex) {
             LOGGER.severe(ex.getMessage());
             throw new InternalServerErrorException(ex.getMessage());
         } catch (Exception ex) {
