@@ -18,6 +18,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -52,6 +53,9 @@ public class Almacen implements Serializable {
     private String pais;
 
     private double espacio;
+
+    @Transient // Este campo no será persistido en la base de datos
+    private Long articuloId;
 
     public Almacen() {
     }
@@ -111,6 +115,14 @@ public class Almacen implements Serializable {
 
     public void setArticulos(Set<Articulo> articulos) {
         this.articulos = articulos;
+    }
+
+    public Long getArticuloId() {
+        return articuloId;
+    }
+
+    public void setArticuloId(Long articuloId) {
+        this.articuloId = articuloId;
     }
 
     @ManyToMany(mappedBy = "almacenes", fetch = FetchType.EAGER)

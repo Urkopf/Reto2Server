@@ -14,6 +14,7 @@ import crud.entidades.Trabajador;
 import crud.entidades.Usuario;
 import crud.excepciones.CreateException;
 import crud.excepciones.ReadException;
+import crud.excepciones.RelationAlreadyExistsException;
 import crud.excepciones.RemoveException;
 import crud.excepciones.UpdateException;
 import java.util.List;
@@ -116,4 +117,6 @@ public interface IGestorEntidadesLocal {
     public void recuperarPass(Usuario usuario) throws ReadException;
 
     public List<Almacen> findAllArticuloById(Long id) throws ReadException;
+
+    public void updateAlmacenWithArticulo(Almacen almacen) throws UpdateException, CreateException, ReadException, RelationAlreadyExistsException;
 }
