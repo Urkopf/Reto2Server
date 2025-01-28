@@ -177,10 +177,31 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
     public void updateArticulo(Articulo articulo) throws UpdateException {
         try {
             Articulo articuloExistente = em.find(Articulo.class, articulo.getId());
-            articulo.setAlmacen(articuloExistente.getAlmacenes());
+            articulo.setAlmacenes(articuloExistente.getAlmacenes());
             if (!em.contains(articulo)) {
                 em.merge(articulo);
             }
+            em.flush();
+        } catch (Exception e) {
+            throw new UpdateException(e.getMessage());
+        }
+    }
+
+    @Override
+    public void updateArticuloDetalle(Articulo articulo) throws UpdateException {
+        try {
+            LOGGER.log(Level.INFO, "Articulo tiene {0} numero de alamacenes", articulo.getAlmacenes().size());
+
+            for (Almacen almacen : articulo.getAlmacenes()) {
+                LOGGER.log(Level.INFO, "Articulo tiene Almacen {0}", almacen.getId());
+                if (!almacen.getArticulos().contains(articulo)) {
+                    LOGGER.log(Level.INFO, "Almacen " + almacen.getId() + " tiene asignados " + almacen.getArticulos().size() + " articulos");
+                    almacen.getArticulos().add(articulo);
+                }
+            }
+
+            em.merge(articulo);
+
             em.flush();
         } catch (Exception e) {
             throw new UpdateException(e.getMessage());

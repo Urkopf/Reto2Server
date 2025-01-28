@@ -55,6 +55,8 @@ public interface IGestorEntidadesLocal {
 
     public void updateArticulo(Articulo articulo) throws UpdateException;
 
+    public void updateArticuloDetalle(Articulo articulo) throws UpdateException;
+
     public void updateAlmacen(Almacen almacen) throws UpdateException;
 
     //REMOVE------------------------
