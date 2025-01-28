@@ -177,7 +177,7 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
     public void updateArticulo(Articulo articulo) throws UpdateException {
         try {
             Articulo articuloExistente = em.find(Articulo.class, articulo.getId());
-            articulo.setAlmacenes(articuloExistente.getAlmacenes());
+            articulo.setAlmacen(articuloExistente.getAlmacenes());
             if (!em.contains(articulo)) {
                 em.merge(articulo);
             }
