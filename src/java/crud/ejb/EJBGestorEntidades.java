@@ -10,7 +10,6 @@ import crud.entidades.Usuario;
 import static crud.enviocorreo.EnvioCorreos.enviar;
 import crud.excepciones.CreateException;
 import crud.excepciones.ReadException;
-import crud.excepciones.RelationAlreadyExistsException;
 import crud.excepciones.RemoveException;
 import crud.excepciones.UpdateException;
 import static crud.seguridad.UtilidadesCifrado.cargarClavePrivada;
@@ -176,8 +175,9 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
     @Override
     public void updateArticulo(Articulo articulo) throws UpdateException {
         try {
+            LOGGER.log(Level.INFO, "Articulo tiene {0} numero de alamacenes", articulo.getAlmacenes().size());
             Articulo articuloExistente = em.find(Articulo.class, articulo.getId());
-            articulo.setAlmacen(articuloExistente.getAlmacenes());
+            articulo.setAlmacenes(articuloExistente.getAlmacenes());
             if (!em.contains(articulo)) {
                 em.merge(articulo);
             }
@@ -611,74 +611,6 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
             throw new ReadException(e.getMessage());
         }
         return listaAlmacenes;
-    }
-
-    @Override
-    public void updateAlmacenWithArticulo(Almacen almacen) throws UpdateException, CreateException, ReadException, RelationAlreadyExistsException {
-        try {
-            // Verifica si ya existe la relación en la tabla intermedia con una consulta SQL nativa
-            Long count = ((Number) em.createNativeQuery(
-                    "SELECT COUNT(*) FROM reto2.articulo_almacen "
-                    + "WHERE articulos_articulo_id = ? AND almacenes_almacen_id = ?")
-                    .setParameter(1, almacen.getArticuloId())
-                    .setParameter(2, almacen.getId())
-                    .getSingleResult()).longValue();
-
-            if (count == 0) {
-                almacen.setEspacio(almacen.getEspacio() - 1);
-                updateAlmacen(almacen);
-                // Inserta la relación si no existe
-                LOGGER.info("Relación no encontrada. Insertando nueva relación.");
-                em.createNativeQuery(
-                        "INSERT INTO reto2.articulo_almacen (articulos_articulo_id, almacenes_almacen_id) VALUES (?, ?)")
-                        .setParameter(1, almacen.getArticuloId())
-                        .setParameter(2, almacen.getId())
-                        .executeUpdate();
-            } else {
-                LOGGER.info("La relación entre el artículo y el almacén ya existe.");
-                throw new RelationAlreadyExistsException("La relación entre el artículo y el almacén ya existe.");
-            }
-
-            // Confirma los cambios en la base de datos
-            em.flush();
-
-        } catch (javax.persistence.PersistenceException e) {
-            LOGGER.severe("Error de persistencia al manejar la relación artículo-almacén: " + e.getMessage());
-            throw new UpdateException("Error de persistencia al manejar la relación artículo-almacén.");
-        } catch (IllegalArgumentException e) {
-            LOGGER.severe("Parámetros inválidos: " + e.getMessage());
-            throw new ReadException("Los parámetros proporcionados para la relación son inválidos.");
-        } catch (Exception e) {
-            LOGGER.severe("Error inesperado: " + e.getMessage());
-            throw new UpdateException("Error inesperado al manejar la relación artículo-almacén.");
-        }
-    }
-
-    @Override
-    public void removeAlmacenWithArticulo(Almacen almacen) throws RemoveException, ReadException {
-        try {
-            Long count = ((Number) em.createNativeQuery(
-                    "SELECT COUNT(*) FROM reto2.articulo_almacen "
-                    + "WHERE articulos_articulo_id = ? AND almacenes_almacen_id = ?")
-                    .setParameter(1, almacen.getArticuloId())
-                    .setParameter(2, almacen.getId())
-                    .getSingleResult()).longValue();
-
-            if (count > 0) {
-                almacen.setEspacio(almacen.getEspacio() + 1);
-                removeAlmacen(almacen);
-                LOGGER.info("Borrar la relacion.");
-                em.createNativeQuery(
-                        "DELETE FROM reto2.articulo_almacen WHERE articulos_articulo_id = ? AND almacenes_almacen_id = ?")
-                        .setParameter(1, almacen.getArticuloId())
-                        .setParameter(2, almacen.getId())
-                        .executeUpdate();
-            }
-
-        } catch (Exception e) {
-            LOGGER.severe("Error inesperado: " + e.getMessage());
-            throw new RemoveException("Error inesperado al manejar la relación artículo-almacén.");
-        }
     }
 
 }

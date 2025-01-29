@@ -74,12 +74,12 @@ public class ArticuloFacadeREST {
         }
     }
 
-    @POST
+    @PUT
     @Path("detalle")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void editDetalles(Articulo entity) {
         try {
-            LOGGER.log(Level.INFO, "Actualizando articulo DETALLES con ID {0}", entity.getAlmacenes().size()
+            LOGGER.log(Level.INFO, "Actualizando articulo DETALLES con ID {0}", entity.getId()
             );
             // Aseguramos que el ID del entity coincida con el de la ruta
             ejb.updateArticuloDetalle(entity);

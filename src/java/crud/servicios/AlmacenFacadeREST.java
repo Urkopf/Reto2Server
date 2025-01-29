@@ -9,7 +9,6 @@ import crud.ejb.IGestorEntidadesLocal;
 import crud.entidades.Almacen;
 import crud.excepciones.CreateException;
 import crud.excepciones.ReadException;
-import crud.excepciones.RelationAlreadyExistsException;
 import crud.excepciones.RemoveException;
 import crud.excepciones.UpdateException;
 import java.util.List;
@@ -27,8 +26,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
 /**
  *
@@ -72,25 +69,6 @@ public class AlmacenFacadeREST {
         } catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "Error inesperado: {0}", ex.getMessage());
             throw new InternalServerErrorException("Error interno del servidor.");
-        }
-    }
-
-    @POST
-    @Path("relacion")
-    public Response asociarOActualizarArticuloAlmacen(Almacen entity) {
-        try {
-            LOGGER.info("Iniciando la asociación o actualización del artículo con el almacén.");
-            ejb.updateAlmacenWithArticulo(entity);
-            LOGGER.info("Operación completada correctamente.");
-            return Response.ok("Relación artículo-almacén creada o actualizada correctamente.").status(Status.OK).build();
-        } catch (RelationAlreadyExistsException e) {
-            LOGGER.warning("La relación entre el artículo y el almacén ya existe. ");
-            // Devuelve un código 409 Conflict
-            return Response.status(Response.Status.CONFLICT)
-                    .entity("La relación entre el artículo y el almacén ya existe.").build();
-        } catch (Exception e) {
-            LOGGER.severe("Error al manejar la relación artículo-almacén: " + e.getMessage());
-            return Response.serverError().entity("Error al manejar la relación artículo-almacén.").status(Status.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -148,22 +126,6 @@ public class AlmacenFacadeREST {
             LOGGER.log(Level.INFO, "Buscando todos los almacenes con id: {0}", id);
             return ejb.findAllArticuloById(id);
         } catch (ReadException ex) {
-            LOGGER.severe(ex.getMessage());
-            throw new InternalServerErrorException(ex.getMessage());
-        } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "Error inesperado: {0}", ex.getMessage());
-            throw new InternalServerErrorException("Error interno del servidor.");
-        }
-    }
-
-    @POST
-    @Path("borrar")
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void removeRelacion(Almacen almacen) {
-        try {
-            LOGGER.log(Level.INFO, "Borrando almacen {0}", almacen.getId());
-            ejb.removeAlmacenWithArticulo(almacen);
-        } catch (ReadException | RemoveException ex) {
             LOGGER.severe(ex.getMessage());
             throw new InternalServerErrorException(ex.getMessage());
         } catch (Exception ex) {
