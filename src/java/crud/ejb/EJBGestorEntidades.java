@@ -21,6 +21,7 @@ import static crud.seguridad.UtilidadesCifrado.hashearContraseña;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -175,9 +176,12 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
     @Override
     public void updateArticulo(Articulo articulo) throws UpdateException {
         try {
-            LOGGER.log(Level.INFO, "Articulo tiene {0} numero de alamacenes", articulo.getAlmacenes().size());
-            Articulo articuloExistente = em.find(Articulo.class, articulo.getId());
-            articulo.setAlmacenes(articuloExistente.getAlmacenes());
+            if (null != articulo.getAlmacenTrump()) {
+                articulo.setAlmacenes(new HashSet<>(articulo.getAlmacenTrump()));
+            }
+            LOGGER.log(Level.INFO, "Articulo tiene {0} numero de almacenes", articulo.getAlmacenes().size());
+            articulo.setAlmacenes(articulo.getAlmacenes());
+            LOGGER.log(Level.INFO, "Actualizando almacenes");
             if (!em.contains(articulo)) {
                 em.merge(articulo);
             }
