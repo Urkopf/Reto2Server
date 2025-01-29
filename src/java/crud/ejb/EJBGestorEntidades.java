@@ -14,8 +14,7 @@ import crud.excepciones.RemoveException;
 import crud.excepciones.UpdateException;
 import static crud.seguridad.UtilidadesCifrado.cargarClavePrivada;
 import static crud.seguridad.UtilidadesCifrado.cargarClavePublica;
-import static crud.seguridad.UtilidadesCifrado.desencriptarConClavePrivada;
-import static crud.seguridad.UtilidadesCifrado.encriptarConClavePublica;
+import static crud.seguridad.UtilidadesCifrado.descifrarConClavePrivada;
 import static crud.seguridad.UtilidadesCifrado.generarContrasenaTemporal;
 import static crud.seguridad.UtilidadesCifrado.hashearContraseña;
 import java.security.PrivateKey;
@@ -430,7 +429,7 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
             PrivateKey clavePrivada = cargarClavePrivada();
 
             // Servidor desencripta la contraseña
-            String contraseñaDesencriptada = desencriptarConClavePrivada(usuario.getContrasena(), clavePrivada);
+            String contraseñaDesencriptada = descifrarConClavePrivada(usuario.getContrasena(), clavePrivada);
 
             // Servidor hashea la contraseña antes de almacenarla
             String contraseñaHasheada = hashearContraseña(contraseñaDesencriptada);
@@ -474,7 +473,7 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
             PrivateKey clavePrivada = null;
             clavePrivada = cargarClavePrivada();
             // Servidor desencripta la contraseña
-            String contraseñaDesencriptadaVieja = desencriptarConClavePrivada(usuario.getContrasena(), clavePrivada);
+            String contraseñaDesencriptadaVieja = descifrarConClavePrivada(usuario.getContrasena(), clavePrivada);
 
             // Servidor hashea la contraseña antes de almacenarla
             String contraseñaHasheadaVieja = hashearContraseña(contraseñaDesencriptadaVieja);
@@ -485,7 +484,7 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
             if (usuarioBD != null) {
 
                 // Servidor desencripta la contraseña
-                String contraseñaDesencriptadaNueva = desencriptarConClavePrivada(usuario.getCalle(), clavePrivada);
+                String contraseñaDesencriptadaNueva = descifrarConClavePrivada(usuario.getCalle(), clavePrivada);
 
                 // Servidor hashea la contraseña antes de almacenarla
                 String contraseñaHasheadaNuevo = hashearContraseña(contraseñaDesencriptadaNueva);
@@ -505,15 +504,18 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
     public void recuperarPass(Usuario usuario) throws ReadException {
         Usuario usuarioBD = null;
         if (existeCorreo(usuario)) {
+
             String nueva = generarContrasenaTemporal();
+
             usuarioBD = em.createNamedQuery("recuperar", Usuario.class)
                     .setParameter("correo", usuario.getCorreo())
                     .getSingleResult();
             //Buscar usuario, y asignar nueva contraseña
             // Cargar claves desde archivos
-            PublicKey clavePublica = null;
-            PrivateKey clavePrivada = null;
+            //  PublicKey clavePublica = null;
+            //PrivateKey clavePrivada = null;
             try {
+                /*
                 clavePublica = cargarClavePublica();
                 clavePrivada = cargarClavePrivada();
                 // Cliente encripta la contraseña
@@ -521,9 +523,9 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
 
                 // Servidor desencripta la contraseña
                 String contraseñaDesencriptada = desencriptarConClavePrivada(contraseñaEncriptada, clavePrivada);
-
+                 */
                 // Servidor hashea la contraseña antes de almacenarla
-                String contraseñaHasheada = hashearContraseña(contraseñaDesencriptada);
+                String contraseñaHasheada = hashearContraseña(nueva);
                 usuarioBD.setContrasena(contraseñaHasheada);
 
                 //contraseñaHasheada <-- asignarla al usuario para editarla
@@ -560,7 +562,7 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
         PrivateKey clavePrivada = cargarClavePrivada();
 
         // Servidor desencripta la contraseña
-        String contraseñaDesencriptada = desencriptarConClavePrivada(usuario.getContrasena(), clavePrivada);
+        String contraseñaDesencriptada = descifrarConClavePrivada(usuario.getContrasena(), clavePrivada);
 
         // Servidor hashea la contraseña antes de almacenarla
         String contraseñaHasheada = hashearContraseña(contraseñaDesencriptada);
