@@ -74,6 +74,24 @@ public class ArticuloFacadeREST {
         }
     }
 
+    @PUT
+    @Path("detalle")
+    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public void editDetalles(Articulo entity) {
+        try {
+            LOGGER.log(Level.INFO, "Actualizando articulo DETALLES con ID {0}", entity.getId()
+            );
+            // Aseguramos que el ID del entity coincida con el de la ruta
+            ejb.updateArticuloDetalle(entity);
+        } catch (UpdateException ex) {
+            LOGGER.severe(ex.getMessage());
+            throw new InternalServerErrorException(ex.getMessage());
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Error inesperado: {0}", ex.getMessage());
+            throw new InternalServerErrorException("Error interno del servidor.");
+        }
+    }
+
     @DELETE
     @Path("{id}")
     public void remove(@PathParam("id") Long id) {

@@ -19,7 +19,10 @@ import static crud.seguridad.UtilidadesCifrado.generarContrasenaTemporal;
 import static crud.seguridad.UtilidadesCifrado.hashearContraseña;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
@@ -172,9 +175,36 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
     @Override
     public void updateArticulo(Articulo articulo) throws UpdateException {
         try {
+            if (null != articulo.getAlmacenTrump()) {
+                articulo.setAlmacenes(new HashSet<>(articulo.getAlmacenTrump()));
+            }
+            LOGGER.log(Level.INFO, "Articulo tiene {0} numero de almacenes", articulo.getAlmacenes().size());
+            articulo.setAlmacenes(articulo.getAlmacenes());
+            LOGGER.log(Level.INFO, "Actualizando almacenes");
             if (!em.contains(articulo)) {
                 em.merge(articulo);
             }
+            em.flush();
+        } catch (Exception e) {
+            throw new UpdateException(e.getMessage());
+        }
+    }
+
+    @Override
+    public void updateArticuloDetalle(Articulo articulo) throws UpdateException {
+        try {
+            LOGGER.log(Level.INFO, "Articulo tiene {0} numero de alamacenes", articulo.getAlmacenes().size());
+
+            for (Almacen almacen : articulo.getAlmacenes()) {
+                LOGGER.log(Level.INFO, "Articulo tiene Almacen {0}", almacen.getId());
+                if (!almacen.getArticulos().contains(articulo)) {
+                    LOGGER.log(Level.INFO, "Almacen " + almacen.getId() + " tiene asignados " + almacen.getArticulos().size() + " articulos");
+                    almacen.getArticulos().add(articulo);
+                }
+            }
+
+            em.merge(articulo);
+
             em.flush();
         } catch (Exception e) {
             throw new UpdateException(e.getMessage());
@@ -571,18 +601,22 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
 
     @Override
     public List<Almacen> findAllArticuloById(Long id) throws ReadException {
-        List<Almacen> almacenes;
+        List<Almacen> listaAlmacenes;
         try {
-            LOGGER.log(Level.INFO, "Buscando almacenes para el articulo....");
-            almacenes = em.createNamedQuery("findAlmacenesByArticuloId", Almacen.class)
-                    .setParameter("articulo_id", id)
-                    .getResultList();
-            LOGGER.log(Level.INFO, "Almacenes encontrados");
+//            LOGGER.log(Level.INFO, "Buscando almacenes para el articulo....");
+//            almacenes = em.createNamedQuery("findAlmacenesByArticuloId", Almacen.class)
+//                    .setParameter("articulo_id", id)
+//                    .getResultList();
+//            LOGGER.log(Level.INFO, "Almacenes encontrados");
+
+            Articulo articuloExistente = em.find(Articulo.class, id);
+            Set<Almacen> setAlmacenes = articuloExistente.getAlmacenes(); // Obtienes un Set
+            listaAlmacenes = new ArrayList<>(setAlmacenes); // Convierte el Set a List
 
         } catch (Exception e) {
             throw new ReadException(e.getMessage());
         }
-        return almacenes;
+        return listaAlmacenes;
     }
 
 }

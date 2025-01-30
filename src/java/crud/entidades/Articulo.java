@@ -6,8 +6,10 @@
 package crud.entidades;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -22,6 +24,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -48,6 +51,9 @@ public class Articulo implements Serializable {
     private String descripcion;
 
     private int stock;
+
+    @Transient
+    private List<Almacen> almacenTrump = new ArrayList<>();
 
     @Temporal(TemporalType.DATE)
     @Column(name = "fecha_reposicion")
@@ -129,8 +135,16 @@ public class Articulo implements Serializable {
         return almacenes;
     }
 
-    public void setAlmacen(Set<Almacen> almacenes) {
+    public void setAlmacenes(Set<Almacen> almacenes) {
         this.almacenes = almacenes;
+    }
+
+    public List<Almacen> getAlmacenTrump() {
+        return almacenTrump;
+    }
+
+    public void setAlmacenTrump(List<Almacen> almacenTrump) {
+        this.almacenTrump = almacenTrump;
     }
 
     @Override

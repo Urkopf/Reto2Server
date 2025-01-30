@@ -54,6 +54,8 @@ public interface IGestorEntidadesLocal {
 
     public void updateArticulo(Articulo articulo) throws UpdateException;
 
+    public void updateArticuloDetalle(Articulo articulo) throws UpdateException;
+
     public void updateAlmacen(Almacen almacen) throws UpdateException;
 
     //REMOVE------------------------
@@ -116,4 +118,5 @@ public interface IGestorEntidadesLocal {
     public void recuperarPass(Usuario usuario) throws ReadException;
 
     public List<Almacen> findAllArticuloById(Long id) throws ReadException;
+
 }
