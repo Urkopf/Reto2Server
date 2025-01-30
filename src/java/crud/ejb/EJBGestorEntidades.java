@@ -27,6 +27,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 
 /**
@@ -457,37 +458,42 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
 
             // Cargar claves desde archivos
             PrivateKey clavePrivada = cargarClavePrivada();
-
+            LOGGER.log(Level.INFO, "Carganda clave privada");
             // Servidor desencripta la contraseña
             String contraseñaDesencriptada = descifrarConClavePrivada(usuario.getContrasena(), clavePrivada);
-
+            LOGGER.log(Level.INFO, "Desencripto");
             // Servidor hashea la contraseña antes de almacenarla
             String contraseñaHasheada = hashearContraseña(contraseñaDesencriptada);
-
+            LOGGER.log(Level.INFO, "Hasheo");
             // 1. Recuperar el usuario desde la base de datos por correo
             Usuario usuarioBD = em.createNamedQuery("inicioSesion", Usuario.class)
                     .setParameter("correo", usuario.getCorreo())
                     .setParameter("contrasena", contraseñaHasheada)
                     .getSingleResult();
-
+            LOGGER.log(Level.INFO, "Query ejecutada");
             if (usuarioBD == null) {
                 throw new ReadException("Usuario no encontrado.");
             }
 
             // 8. Buscar si el usuario es Cliente o Trabajador
             LOGGER.log(Level.INFO, "Buscando si es cliente: {0}", usuarioBD.getId());
-            respuesta2 = em.createNamedQuery("esCliente")
-                    .setParameter("id", usuarioBD.getId())
-                    .getSingleResult();
-
+            try {
+                respuesta2 = em.createNamedQuery("esCliente")
+                        .setParameter("id", usuarioBD.getId())
+                        .getSingleResult();
+            } catch (NoResultException e) {
+                LOGGER.log(Level.WARNING, "El usuario no es un Cliente.");
+                respuesta2 = null; // Permitir que siga verificando si es Trabajador
+            }
+            LOGGER.log(Level.INFO, "Buscando si es trabajador: {0}", usuarioBD.getId());
             if (respuesta2 == null) {
                 respuesta2 = em.createNamedQuery("esTrabajador")
                         .setParameter("id", usuarioBD.getId())
                         .getSingleResult();
             }
-
+            LOGGER.log(Level.INFO, "Buscando si es trabajador: {0}", usuarioBD.getId());
             respuesta = respuesta2;
-
+            LOGGER.log(Level.INFO, "respuesta: " + respuesta.toString());
         } catch (Exception e) {
             throw new ReadException("Error en el inicio de sesión: " + e.getMessage());
         }

@@ -110,7 +110,7 @@ public class UsuarioFacadeREST {
      * @return
      */
     @POST
-    @Path("/sesion")
+    @Path("sesion")
     @Consumes(MediaType.APPLICATION_XML)
     @Produces(MediaType.APPLICATION_XML)
     public Object inicioSesion(Usuario usuario) {
@@ -129,7 +129,7 @@ public class UsuarioFacadeREST {
     }
 
     @POST
-    @Path("/cambiar")
+    @Path("cambiar")
     @Consumes(MediaType.APPLICATION_XML)
     @Produces(MediaType.APPLICATION_XML)
     public void cambiar(Usuario usuario) {
@@ -148,7 +148,7 @@ public class UsuarioFacadeREST {
     }
 
     @POST
-    @Path("/recuperar")
+    @Path("recuperar")
     @Consumes(MediaType.APPLICATION_XML)
     @Produces(MediaType.APPLICATION_XML)
     public void recuperar(Usuario usuario) {
