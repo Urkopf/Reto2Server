@@ -53,8 +53,10 @@ public class Usuario implements Serializable {
 
     private String cif;
 
+    @Column(unique = true)
     private String correo;
 
+    @Column(unique = true)
     private String contrasena;
 
     private String nombre;
