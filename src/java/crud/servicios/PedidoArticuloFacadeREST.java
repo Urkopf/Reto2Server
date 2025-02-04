@@ -27,6 +27,22 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+/**
+ * RESTful Web Service para operaciones CRUD sobre la entidad PedidoArticulo.
+ * <p>
+ * Este servicio expone endpoints para crear, actualizar, eliminar, buscar (por
+ * ID y en rango) y contar los registros de PedidoArticulo en la base de datos.
+ * Los datos se manejan en formatos XML y JSON.
+ * </p>
+ * <p>
+ * Se utiliza inyección de dependencias (EJB) para interactuar con la capa de
+ * negocio a través de la interfaz IGestorEntidadesLocal, y se registra la
+ * actividad mediante un Logger para facilitar el mantenimiento y la
+ * identificación de errores.
+ * </p>
+ *
+ * @author Urko
+ */
 @Path("pedidoarticulo")
 public class PedidoArticuloFacadeREST {
 
@@ -35,6 +51,14 @@ public class PedidoArticuloFacadeREST {
 
     private Logger LOGGER = Logger.getLogger(PedidoArticuloFacadeREST.class.getName());
 
+    /**
+     * Crea un nuevo registro de PedidoArticulo en la base de datos.
+     *
+     * @param entity La entidad PedidoArticulo a crear; no debe ser nula.
+     * @throws BadRequestException Si la entidad es nula o está incompleta.
+     * @throws InternalServerErrorException Si ocurre un error interno durante
+     * la creación.
+     */
     @POST
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void create(PedidoArticulo entity) {
@@ -53,13 +77,19 @@ public class PedidoArticuloFacadeREST {
         }
     }
 
+    /**
+     * Actualiza un registro existente de PedidoArticulo en la base de datos.
+     *
+     * @param entity La entidad PedidoArticulo con los datos actualizados.
+     * @throws InternalServerErrorException Si ocurre un error interno durante
+     * la actualización.
+     */
     @PUT
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void edit(PedidoArticulo entity) {
         try {
             LOGGER.log(Level.INFO, "Actualizando pedido-artículo con ID {0}", entity.getId());
             // Ajustamos el ID del objeto al de la ruta
-
             ejb.updatePedidoArticulo(entity);
         } catch (UpdateException ex) {
             LOGGER.severe(ex.getMessage());
@@ -70,6 +100,13 @@ public class PedidoArticuloFacadeREST {
         }
     }
 
+    /**
+     * Elimina un registro de PedidoArticulo de la base de datos.
+     *
+     * @param id El identificador del PedidoArticulo a eliminar.
+     * @throws InternalServerErrorException Si ocurre un error interno durante
+     * la eliminación.
+     */
     @DELETE
     @Path("{id}")
     public void remove(@PathParam("id") Long id) {
@@ -88,6 +125,14 @@ public class PedidoArticuloFacadeREST {
         }
     }
 
+    /**
+     * Busca y retorna un registro de PedidoArticulo por su ID.
+     *
+     * @param id El identificador del PedidoArticulo a buscar.
+     * @return El objeto PedidoArticulo encontrado.
+     * @throws InternalServerErrorException Si ocurre un error interno durante
+     * la búsqueda.
+     */
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -104,6 +149,14 @@ public class PedidoArticuloFacadeREST {
         }
     }
 
+    /**
+     * Retorna una lista de todos los registros de PedidoArticulo almacenados en
+     * la base de datos.
+     *
+     * @return Una lista de objetos PedidoArticulo.
+     * @throws InternalServerErrorException Si ocurre un error interno durante
+     * la consulta.
+     */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<PedidoArticulo> findAll() {
@@ -119,6 +172,16 @@ public class PedidoArticuloFacadeREST {
         }
     }
 
+    /**
+     * Retorna una sublista de registros de PedidoArticulo dentro de un rango de
+     * índices.
+     *
+     * @param from El índice inicial (inclusive) de la sublista.
+     * @param to El índice final (exclusivo) de la sublista.
+     * @return Una lista de objetos PedidoArticulo en el rango especificado.
+     * @throws InternalServerErrorException Si ocurre un error interno durante
+     * la consulta.
+     */
     @GET
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -139,6 +202,14 @@ public class PedidoArticuloFacadeREST {
         }
     }
 
+    /**
+     * Retorna el conteo total de registros de PedidoArticulo almacenados en la
+     * base de datos.
+     *
+     * @return El número total de registros como String.
+     * @throws InternalServerErrorException Si ocurre un error interno durante
+     * el conteo.
+     */
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
