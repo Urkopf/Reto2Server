@@ -5,7 +5,30 @@
  */
 package crud.entidades;
 
-/**
+/*
+ * Enumeración Departamento
+ *
+ * <p>Esta enumeración define los diferentes departamentos dentro de una organización, cada uno
+ * encargado de funciones específicas para el funcionamiento eficiente del negocio.</p>
+ *
+ * <p>Los departamentos incluidos son:</p>
+ * <ul>
+ *   <li><strong>RECEPCION:</strong> Encargado de recibir paquetes.</li>
+ *   <li><strong>ALMACENAMIENTO:</strong> Gestiona el almacenamiento temporal de los paquetes.</li>
+ *   <li><strong>ENVIO:</strong> Responsable de gestionar los envíos de productos.</li>
+ *   <li><strong>LOGISTICA:</strong> Organiza las rutas y el transporte.</li>
+ *   <li><strong>ATENCION_CLIENTE:</strong> Resuelve consultas y problemas de los clientes.</li>
+ *   <li><strong>FACTURACION:</strong> Maneja la facturación y los pagos.</li>
+ *   <li><strong>IT:</strong> Brinda soporte técnico en tecnología de la información.</li>
+ *   <li><strong>RECURSOS_HUMANOS:</strong> Gestiona el personal y la contratación.</li>
+ *   <li><strong>MARKETING:</strong> Encargado de promociones y relaciones públicas.</li>
+ *   <li><strong>SEGURIDAD:</strong> Asegura la protección de paquetes y empleados.</li>
+ *   <li><strong>LEGAL:</strong> Maneja asuntos legales y regulatorios.</li>
+ *   <li><strong>OPERACIONES:</strong> Encargado de las operaciones diarias.</li>
+ *   <li><strong>CONTROL_CALIDAD:</strong> Verifica la calidad del servicio.</li>
+ * </ul>
+ *
+ * <p>Cada constante enumera un departamento con su respectiva descripción de funciones.</p>
  *
  * @author Urko
  */
