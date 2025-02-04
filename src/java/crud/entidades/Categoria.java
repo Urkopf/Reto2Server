@@ -1,12 +1,24 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package crud.entidades;
+
+import crud.entidades.Departamento;
 
 /**
+ * La enumeración {@code Categoria} representa las diferentes categorías
+ * laborales asignadas a los trabajadores, cada una vinculada a un
+ * {@link Departamento} específico.
+ * <p>
+ * Cada constante de esta enumeración define una categoría de trabajo y se
+ * asocia con un departamento particular, lo que permite clasificar y gestionar
+ * roles de forma organizada en el sistema.
+ * </p>
+ * <p>
+ * Ejemplo de uso:
+ * <pre>
+ *     Categoria categoria = Categoria.RECEPCION_PAQUETES;
+ *     Departamento dept = categoria.getDepartamento();
+ * </pre>
+ * </p>
  *
+ * @see Departamento
  * @author Urko
  */
 public enum Categoria {
@@ -37,12 +49,25 @@ public enum Categoria {
     INSPECCION(Departamento.CONTROL_CALIDAD),
     ANALISIS_MEJORA(Departamento.CONTROL_CALIDAD);
 
+    /**
+     * Departamento asociado a la categoría.
+     */
     private final Departamento departamento;
 
+    /**
+     * Constructor de la enumeración {@code Categoria}.
+     *
+     * @param departamento el departamento asociado a esta categoría.
+     */
     Categoria(Departamento departamento) {
         this.departamento = departamento;
     }
 
+    /**
+     * Retorna el departamento asociado a la categoría.
+     *
+     * @return el {@link Departamento} correspondiente a esta categoría.
+     */
     public Departamento getDepartamento() {
         return departamento;
     }
