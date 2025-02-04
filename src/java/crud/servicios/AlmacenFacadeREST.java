@@ -28,8 +28,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 /**
- *
- * @author 2dam
+ * Servicio REST que gestiona operaciones CRUD sobre la entidad {@link Almacen}.
+ * Provee métodos para crear, actualizar, eliminar y consultar almacenes.
+ * También ofrece consultas de rangos y recuento de los registros existentes.
  */
 @Path("almacen")
 public class AlmacenFacadeREST {
@@ -39,6 +40,15 @@ public class AlmacenFacadeREST {
 
     private Logger LOGGER = Logger.getLogger(AlmacenFacadeREST.class.getName());
 
+    /**
+     * Crea un nuevo almacén en la base de datos.
+     *
+     * @param entity Objeto {@link Almacen} que se desea persistir.
+     * @throws BadRequestException Si el objeto recibido es nulo o está
+     * incompleto.
+     * @throws InternalServerErrorException Si ocurre algún problema en la capa
+     * de negocio o persistencia.
+     */
     @POST
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void create(Almacen entity) {
@@ -57,6 +67,13 @@ public class AlmacenFacadeREST {
         }
     }
 
+    /**
+     * Actualiza un almacén existente.
+     *
+     * @param entity Objeto {@link Almacen} con datos actualizados.
+     * @throws InternalServerErrorException Si ocurre algún problema en la capa
+     * de negocio o persistencia.
+     */
     @PUT
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void edit(Almacen entity) {
@@ -72,6 +89,13 @@ public class AlmacenFacadeREST {
         }
     }
 
+    /**
+     * Elimina un almacén de la base de datos.
+     *
+     * @param id Identificador del almacén a eliminar.
+     * @throws InternalServerErrorException Si ocurre algún problema en la capa
+     * de negocio o persistencia.
+     */
     @DELETE
     @Path("{id}")
     public void remove(@PathParam("id") Long id) {
@@ -87,6 +111,14 @@ public class AlmacenFacadeREST {
         }
     }
 
+    /**
+     * Busca un almacén por su identificador.
+     *
+     * @param id Identificador del almacén a buscar.
+     * @return El objeto {@link Almacen} correspondiente al ID dado.
+     * @throws InternalServerErrorException Si ocurre algún problema en la capa
+     * de negocio o persistencia.
+     */
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -103,6 +135,13 @@ public class AlmacenFacadeREST {
         }
     }
 
+    /**
+     * Obtiene la lista completa de almacenes.
+     *
+     * @return Lista de objetos {@link Almacen}.
+     * @throws InternalServerErrorException Si ocurre algún problema en la capa
+     * de negocio o persistencia.
+     */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Almacen> findAll() {
@@ -118,6 +157,15 @@ public class AlmacenFacadeREST {
         }
     }
 
+    /**
+     * Obtiene la lista de almacenes que almacenan un artículo especificado por
+     * ID.
+     *
+     * @param id Identificador del artículo cuyos almacenes se desean consultar.
+     * @return Lista de objetos {@link Almacen} asociados al artículo.
+     * @throws InternalServerErrorException Si ocurre algún problema en la capa
+     * de negocio o persistencia.
+     */
     @GET
     @Path("articulo/{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -134,6 +182,17 @@ public class AlmacenFacadeREST {
         }
     }
 
+    /**
+     * Obtiene una sublista de almacenes, determinada por los índices de inicio
+     * (from) y fin (to).
+     *
+     * @param from Índice inicial (inclusivo).
+     * @param to Índice final (exclusivo).
+     * @return Sublista de objetos {@link Almacen} comprendidos en el rango
+     * especificado.
+     * @throws InternalServerErrorException Si ocurre algún problema en la capa
+     * de negocio o persistencia.
+     */
     @GET
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -155,6 +214,13 @@ public class AlmacenFacadeREST {
         }
     }
 
+    /**
+     * Devuelve la cantidad total de almacenes existentes.
+     *
+     * @return Cadena de texto que representa el número total de almacenes.
+     * @throws InternalServerErrorException Si ocurre algún problema en la capa
+     * de negocio o persistencia.
+     */
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
