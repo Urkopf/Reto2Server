@@ -118,6 +118,7 @@ public class UsuarioFacadeREST {
         try {
             LOGGER.log(Level.INFO, "Buscando usuario: " + usuario.getCorreo());
             resultado = ejb.inicioSesion(usuario); // Devuelve Cliente o Trabajador
+            ((Usuario) resultado).ocultarContraseña();
         } catch (ReadException ex) {
             LOGGER.severe(ex.getMessage());
             throw new InternalServerErrorException(ex.getMessage());

@@ -145,6 +145,10 @@ public class Usuario implements Serializable {
         this.activo = activo;
     }
 
+    public void ocultarContraseña() {
+        this.contrasena = null;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
