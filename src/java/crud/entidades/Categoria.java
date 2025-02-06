@@ -5,7 +5,46 @@
  */
 package crud.entidades;
 
-/**
+/*
+ * Enumeración Categoria
+ *
+ * <p>Esta enumeración define diferentes categorías que están asociadas a departamentos específicos
+ * dentro de una organización.</p>
+ *
+ * <p>Cada categoría enumera un tipo de función o responsabilidad dentro de la empresa, vinculada
+ * a un departamento particular.</p>
+ *
+ * <p>Las categorías y sus respectivos departamentos son:</p>
+ * <ul>
+ *   <li><strong>RECEPCION_PAQUETES:</strong> Asociada al departamento de Recepción.</li>
+ *   <li><strong>REGISTRO_PAQUETES:</strong> Asociada al departamento de Recepción.</li>
+ *   <li><strong>GESTION_INVENTARIO:</strong> Asociada al departamento de Almacenamiento.</li>
+ *   <li><strong>MANEJO_ZONAS_CARGA:</strong> Asociada al departamento de Almacenamiento.</li>
+ *   <li><strong>PREPARACION_ENVIOS:</strong> Asociada al departamento de Envío.</li>
+ *   <li><strong>SEGUIMIENTO_ENTREGAS:</strong> Asociada al departamento de Envío.</li>
+ *   <li><strong>PLANIFICACION_RUTAS:</strong> Asociada al departamento de Logística.</li>
+ *   <li><strong>COORDINACION_TRANSPORTES:</strong> Asociada al departamento de Logística.</li>
+ *   <li><strong>SOPORTE_TECNICO:</strong> Asociada al departamento de Atención al Cliente.</li>
+ *   <li><strong>RESOLUCION_RECLAMACIONES:</strong> Asociada al departamento de Atención al Cliente.</li>
+ *   <li><strong>COBROS:</strong> Asociada al departamento de Facturación.</li>
+ *   <li><strong>GESTION_IMPUESTOS:</strong> Asociada al departamento de Facturación.</li>
+ *   <li><strong>INFRAESTRUCTURA:</strong> Asociada al departamento de IT.</li>
+ *   <li><strong>DESARROLLO_SOFTWARE:</strong> Asociada al departamento de IT.</li>
+ *   <li><strong>CONTRATACION:</strong> Asociada al departamento de Recursos Humanos.</li>
+ *   <li><strong>GESTION_PERSONAL:</strong> Asociada al departamento de Recursos Humanos.</li>
+ *   <li><strong>PROMOCIONES:</strong> Asociada al departamento de Marketing.</li>
+ *   <li><strong>RELACIONES_PUBLICAS:</strong> Asociada al departamento de Marketing.</li>
+ *   <li><strong>MONITOREO_SEGURIDAD:</strong> Asociada al departamento de Seguridad.</li>
+ *   <li><strong>GESTION_RIESGOS:</strong> Asociada al departamento de Seguridad.</li>
+ *   <li><strong>ASUNTOS_LEGALES:</strong> Asociada al departamento Legal.</li>
+ *   <li><strong>CUMPLIMIENTO_NORMATIVO:</strong> Asociada al departamento Legal.</li>
+ *   <li><strong>GESTION_OPERATIVA:</strong> Asociada al departamento de Operaciones.</li>
+ *   <li><strong>SUPERVISION_PROCESOS:</strong> Asociada al departamento de Operaciones.</li>
+ *   <li><strong>INSPECCION:</strong> Asociada al departamento de Control de Calidad.</li>
+ *   <li><strong>ANALISIS_MEJORA:</strong> Asociada al departamento de Control de Calidad.</li>
+ * </ul>
+ *
+ * <p>Cada constante enumera una categoría con su respectivo departamento asociado.</p>
  *
  * @author Urko
  */
@@ -43,6 +82,11 @@ public enum Categoria {
         this.departamento = departamento;
     }
 
+    /**
+     * Obtiene el departamento asociado a la categoría.
+     *
+     * @return el departamento asociado
+     */
     public Departamento getDepartamento() {
         return departamento;
     }

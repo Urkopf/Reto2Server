@@ -28,8 +28,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 /**
- *
- * @author 2dam
+ * Clase de servicio REST para gestionar los artículos en la aplicación. Provee
+ * operaciones de creación, lectura, actualización y borrado de registros de la
+ * entidad {@link Articulo}.
+ * <p>
+ * Maneja internamente excepciones de creación, lectura, actualización y borrado
+ * y las convierte en respuestas HTTP apropiadas.
+ * </p>
  */
 @Path("articulo")
 public class ArticuloFacadeREST {
@@ -39,6 +44,15 @@ public class ArticuloFacadeREST {
 
     private Logger LOGGER = Logger.getLogger(ArticuloFacadeREST.class.getName());
 
+    /**
+     * Crea un nuevo artículo en la base de datos.
+     *
+     * @param entity Objeto {@link Articulo} que se desea persistir.
+     * @throws BadRequestException Si el objeto {@code entity} es nulo o
+     * incompleto.
+     * @throws InternalServerErrorException Si ocurre un error interno durante
+     * la creación.
+     */
     @POST
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void create(Articulo entity) {
@@ -57,6 +71,13 @@ public class ArticuloFacadeREST {
         }
     }
 
+    /**
+     * Actualiza un artículo existente en la base de datos.
+     *
+     * @param entity Objeto {@link Articulo} con los datos actualizados.
+     * @throws InternalServerErrorException Si ocurre un error interno durante
+     * la actualización.
+     */
     @PUT
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void edit(Articulo entity) {
@@ -74,6 +95,15 @@ public class ArticuloFacadeREST {
         }
     }
 
+    /**
+     * Actualiza el detalle de un artículo existente. Se considera una
+     * actualización distinta a la operación {@code edit(Articulo entity)}.
+     *
+     * @param entity Objeto {@link Articulo} que contiene la información
+     * detallada a actualizar.
+     * @throws InternalServerErrorException Si ocurre un error interno durante
+     * la actualización.
+     */
     @PUT
     @Path("detalle")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -92,6 +122,13 @@ public class ArticuloFacadeREST {
         }
     }
 
+    /**
+     * Elimina un artículo de la base de datos.
+     *
+     * @param id Identificador del artículo que se desea eliminar.
+     * @throws InternalServerErrorException Si ocurre un error interno durante
+     * la eliminación.
+     */
     @DELETE
     @Path("{id}")
     public void remove(@PathParam("id") Long id) {
@@ -108,6 +145,14 @@ public class ArticuloFacadeREST {
         }
     }
 
+    /**
+     * Busca un artículo por su identificador.
+     *
+     * @param id Identificador del artículo.
+     * @return El objeto {@link Articulo} encontrado.
+     * @throws InternalServerErrorException Si ocurre un error interno durante
+     * la búsqueda.
+     */
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -124,6 +169,13 @@ public class ArticuloFacadeREST {
         }
     }
 
+    /**
+     * Obtiene la lista de todos los artículos disponibles en la base de datos.
+     *
+     * @return Lista de objetos {@link Articulo}.
+     * @throws InternalServerErrorException Si ocurre un error interno durante
+     * la obtención.
+     */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Articulo> findAll() {
@@ -139,6 +191,18 @@ public class ArticuloFacadeREST {
         }
     }
 
+    /**
+     * Obtiene un subconjunto de artículos en función de los índices
+     * proporcionados. Utiliza la lista completa de artículos y retorna un rango
+     * basado en posiciones.
+     *
+     * @param from Índice de inicio, inclusive.
+     * @param to Índice de fin, exclusivo.
+     * @return Lista de objetos {@link Articulo} que caen dentro del rango
+     * solicitado.
+     * @throws InternalServerErrorException Si ocurre un error interno durante
+     * la obtención.
+     */
     @GET
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -160,6 +224,13 @@ public class ArticuloFacadeREST {
         }
     }
 
+    /**
+     * Cuenta el número total de artículos en la base de datos.
+     *
+     * @return Cadena que representa la cantidad total de artículos.
+     * @throws InternalServerErrorException Si ocurre un error interno durante
+     * la consulta.
+     */
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)

@@ -28,6 +28,21 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+/**
+ * RESTful Web Service para operaciones CRUD sobre la entidad Cliente.
+ * <p>
+ * Este servicio expone endpoints para crear, actualizar, eliminar, buscar (por
+ * ID y en rango) y contar los clientes almacenados en la base de datos. Los
+ * datos se manejan en formatos XML y JSON.
+ * </p>
+ * <p>
+ * Se utilizan excepciones específicas y se registra la actividad mediante un
+ * Logger para facilitar la identificación de errores y el mantenimiento del
+ * servicio.
+ * </p>
+ *
+ * @author Urko
+ */
 @Path("cliente")
 public class ClienteFacadeREST {
 
@@ -36,6 +51,15 @@ public class ClienteFacadeREST {
 
     private Logger LOGGER = Logger.getLogger(ClienteFacadeREST.class.getName());
 
+    /**
+     * Crea un nuevo Cliente en la base de datos.
+     *
+     * @param entity La entidad Cliente a crear. Debe estar completa y no ser
+     * nula.
+     * @throws BadRequestException Si la entidad es nula o está incompleta.
+     * @throws InternalServerErrorException Si ocurre un error interno al crear
+     * el Cliente.
+     */
     @POST
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void create(Cliente entity) {
@@ -55,6 +79,18 @@ public class ClienteFacadeREST {
         }
     }
 
+    /**
+     * Actualiza un Cliente existente en la base de datos.
+     *
+     * @param entity La entidad Cliente con los datos actualizados. Se conserva
+     * la contraseña existente.
+     * @throws ReadException Si ocurre un error al leer el Cliente de la base de
+     * datos.
+     * @throws NotFoundException Si no se encuentra un Cliente con el ID
+     * especificado.
+     * @throws InternalServerErrorException Si ocurre un error interno al
+     * actualizar el Cliente.
+     */
     @PUT
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void edit(Cliente entity) throws ReadException {
@@ -82,6 +118,13 @@ public class ClienteFacadeREST {
         }
     }
 
+    /**
+     * Elimina un Cliente de la base de datos dado su ID.
+     *
+     * @param id El identificador del Cliente a eliminar.
+     * @throws InternalServerErrorException Si ocurre un error interno al
+     * eliminar el Cliente.
+     */
     @DELETE
     @Path("{id}")
     public void remove(@PathParam("id") Long id) {
@@ -98,6 +141,14 @@ public class ClienteFacadeREST {
         }
     }
 
+    /**
+     * Busca y retorna un Cliente de la base de datos dado su ID.
+     *
+     * @param id El identificador del Cliente a buscar.
+     * @return El Cliente encontrado.
+     * @throws InternalServerErrorException Si ocurre un error interno al buscar
+     * el Cliente.
+     */
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -114,6 +165,13 @@ public class ClienteFacadeREST {
         }
     }
 
+    /**
+     * Retorna una lista con todos los Clientes almacenados en la base de datos.
+     *
+     * @return Una lista de Clientes.
+     * @throws InternalServerErrorException Si ocurre un error interno al
+     * obtener la lista de Clientes.
+     */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Cliente> findAll() {
@@ -129,6 +187,15 @@ public class ClienteFacadeREST {
         }
     }
 
+    /**
+     * Retorna una sublista de Clientes, definida por un rango de índices.
+     *
+     * @param from El índice inicial (inclusive).
+     * @param to El índice final (exclusivo).
+     * @return Una lista de Clientes dentro del rango especificado.
+     * @throws InternalServerErrorException Si ocurre un error interno al
+     * obtener la sublista.
+     */
     @GET
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -149,6 +216,13 @@ public class ClienteFacadeREST {
         }
     }
 
+    /**
+     * Retorna el conteo total de Clientes almacenados en la base de datos.
+     *
+     * @return El número total de Clientes en formato de texto.
+     * @throws InternalServerErrorException Si ocurre un error interno al contar
+     * los Clientes.
+     */
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)

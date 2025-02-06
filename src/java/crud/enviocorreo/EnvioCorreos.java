@@ -5,14 +5,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.security.PrivateKey;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
 import javax.crypto.SecretKey;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -24,8 +21,36 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+/**
+ * La clase {@code EnvioCorreos} se encarga de enviar correos electrónicos
+ * utilizando el servicio SMTP de SendGrid.
+ * <p>
+ * Esta clase permite enviar diferentes tipos de mensajes (por ejemplo, para
+ * recuperación o cambio de contraseña) incluyendo contenido en texto y HTML,
+ * así como imágenes embebidas en el cuerpo del mensaje.
+ * </p>
+ *
+ * @author
+ */
 public class EnvioCorreos {
 
+    /**
+     * Envía un correo electrónico de acuerdo al tipo especificado.
+     * <p>
+     * El método configura la conexión SMTP utilizando las propiedades definidas
+     * en el archivo de recursos {@code mail.properties} (ubicado en el paquete
+     * {@code crud.enviocorreo}). Se autentica con el usuario y clave cifrados,
+     * los cuales se descifran mediante una clave simétrica obtenida a través de
+     * {@link UtilidadesCifrado}.
+     * </p>
+     *
+     * @param tipo el tipo de correo a enviar; se esperan valores como
+     * {@code "recupera"} o {@code "cambio"} para configurar el mensaje
+     * correspondiente.
+     * @param correo la dirección de correo electrónico del destinatario.
+     * @param nueva en caso de ser necesario, la nueva contraseña o información
+     * relevante a incluir en el mensaje.
+     */
     public static void enviar(String tipo, String correo, String nueva) {
         try {
             // Configuración del servidor SMTP de SendGrid
@@ -127,6 +152,22 @@ public class EnvioCorreos {
         }
     }
 
+    /**
+     * Carga una imagen desde el classpath y la prepara para ser utilizada en un
+     * mensaje MIME.
+     * <p>
+     * El método busca el recurso de la imagen a partir de la ruta relativa
+     * especificada. Si se encuentra la imagen, se crea un archivo temporal en
+     * el sistema para poder adjuntarla al mensaje. En caso contrario, se lanza
+     * una excepción {@link FileNotFoundException}.
+     * </p>
+     *
+     * @param rutaRelativa la ruta relativa en el classpath donde se encuentra
+     * la imagen.
+     * @return un objeto {@link DataHandler} que contiene la imagen cargada.
+     * @throws Exception si ocurre algún error al cargar la imagen o al crear el
+     * archivo temporal.
+     */
     public static DataHandler cargarImagenDesdeClasspath(String rutaRelativa) throws Exception {
         // Cargar la imagen desde el classpath
         InputStream is = UtilidadesCifrado.class.getClassLoader().getResourceAsStream(rutaRelativa);
