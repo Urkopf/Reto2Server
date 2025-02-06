@@ -422,7 +422,11 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
     @Override
     public void removeArticulo(Articulo articulo) throws RemoveException {
         try {
-            em.remove(em.merge(articulo));
+            if (!em.contains(articulo)) {
+                articulo = em.merge(articulo);
+            }
+            em.remove(articulo);
+            em.flush();
         } catch (Exception e) {
             throw new RemoveException(e.getMessage());
         }
