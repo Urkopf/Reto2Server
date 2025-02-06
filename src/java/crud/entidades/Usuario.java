@@ -301,6 +301,10 @@ public class Usuario implements Serializable {
      *
      * @return El código hash calculado.
      */
+    public void ocultarContraseña() {
+        this.contrasena = null;
+    }
+  
     @Override
     public int hashCode() {
         int hash = 0;

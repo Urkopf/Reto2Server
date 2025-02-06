@@ -733,7 +733,7 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
                 respuesta2 = em.createNamedQuery("esCliente")
                         .setParameter("id", usuarioBD.getId())
                         .getSingleResult();
-                ((Cliente) respuesta2).setContrasena(null);
+
             } catch (NoResultException e) {
                 LOGGER.log(Level.WARNING, "El usuario no es un Cliente.");
                 respuesta2 = null;
@@ -743,7 +743,7 @@ public class EJBGestorEntidades implements IGestorEntidadesLocal {
                 respuesta2 = em.createNamedQuery("esTrabajador")
                         .setParameter("id", usuarioBD.getId())
                         .getSingleResult();
-                ((Trabajador) respuesta2).setContrasena(null);
+
             }
             LOGGER.log(Level.INFO, "Buscando si es trabajador: {0}", usuarioBD.getId());
             respuesta = respuesta2;
